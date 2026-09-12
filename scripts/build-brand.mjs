@@ -17,7 +17,6 @@
  * Outputs land in brand-derived/ and are picked up as sources by
  * scripts/build-assets.mjs. Run via `npm run assets`.
  */
-import sharp from "sharp";
 import { mkdirSync } from "node:fs";
 
 import { fromRgba, removeFlatBackground } from "./lib/image-ops.mjs";

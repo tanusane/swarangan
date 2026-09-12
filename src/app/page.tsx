@@ -5,7 +5,7 @@ import {
 import { Hero } from "@/components/home/hero";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
-import { Section, SwarDivider } from "@/components/ui/section";
+import { ProseSection, Section, SwarDivider } from "@/components/ui/section";
 import { SwarImage } from "@/components/ui/swar-image";
 import {
   examinationHeading,
@@ -78,21 +78,7 @@ export default function HomePage() {
       </Section>
 
       {/* -- Why ------------------------------------------------------------- */}
-      <Section
-        id={whyBlock.key}
-        eyebrow={whyBlock.eyebrow}
-        title={whyBlock.title}
-        swaraIndex={5}
-        ground="sand"
-      >
-        <div className="max-w-3xl space-y-5">
-          {whyBlock.body.map((paragraph) => (
-            <Reveal key={paragraph.slice(0, 40)}>
-              <p className="text-ink-muted text-lg">{paragraph}</p>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
+      <ProseSection block={whyBlock} swaraIndex={5} ground="sand" size="lg" />
 
       {/* -- Where ----------------------------------------------------------- */}
       <Section

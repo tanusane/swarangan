@@ -4,14 +4,14 @@ The website for **Swarangan**, Mrs. Tanuja Sane's Hindustani classical vocal
 music school in Singapore — rebuilt from the original
 [swarangan.sg](https://www.swarangan.sg) so it can be hosted for free.
 
-| | |
-|---|---|
-| Framework | Next.js 16 (App Router) · React 19 · TypeScript (strict) |
-| Styling | Tailwind CSS v4 |
-| Motion | `motion` (motion.dev) · `anime.js` v4 |
-| Hosting | Vercel — free Hobby tier |
-| Data (Phase 2) | Supabase — free tier |
-| Email (Phase 2) | Resend — free tier |
+|                 |                                                          |
+| --------------- | -------------------------------------------------------- |
+| Framework       | Next.js 16 (App Router) · React 19 · TypeScript (strict) |
+| Styling         | Tailwind CSS v4                                          |
+| Motion          | `motion` (motion.dev) · `anime.js` v4                    |
+| Hosting         | Vercel — free Hobby tier                                 |
+| Data (Phase 2)  | Supabase — free tier                                     |
+| Email (Phase 2) | Resend — free tier                                       |
 
 Running cost after migration is **S$0** for hosting, database and email. Only the
 `swarangan.sg` domain renewal remains.
@@ -30,17 +30,17 @@ runs entirely on committed content and assets.
 
 ### Scripts
 
-| Command | What it does |
-|---|---|
-| `npm run dev` | Development server |
-| `npm run build` | Production build |
-| `npm start` | Serve the production build |
-| `npm run verify` | Typecheck + lint + tests — run this before committing |
-| `npm test` | Vitest suite |
-| `npm run assets` | Rebuild all images and the image manifest (see below) |
-| `npm run palette` | Regenerate the colour ramps and re-check WCAG contrast |
-| `npm run duplication` | jscpd copy-paste check |
-| `npm run format` | Prettier |
+| Command               | What it does                                           |
+| --------------------- | ------------------------------------------------------ |
+| `npm run dev`         | Development server                                     |
+| `npm run build`       | Production build                                       |
+| `npm start`           | Serve the production build                             |
+| `npm run verify`      | Typecheck + lint + tests — run this before committing  |
+| `npm test`            | Vitest suite                                           |
+| `npm run assets`      | Rebuild all images and the image manifest (see below)  |
+| `npm run palette`     | Regenerate the colour ramps and re-check WCAG contrast |
+| `npm run duplication` | jscpd copy-paste check                                 |
+| `npm run format`      | Prettier                                               |
 
 ---
 

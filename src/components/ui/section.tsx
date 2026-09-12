@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 
 import { Reveal } from "@/components/ui/reveal";
 import { swaraForIndex } from "@/components/ui/icons";
+import type { ContentBlock } from "@/content/types";
 import { cn } from "@/lib/utils";
 
 export type SectionGround = "ivory" | "sand" | "deep";
@@ -112,5 +113,51 @@ export function SwarDivider({ className }: { className?: string }) {
       </span>
       <span className="to-gold-300 h-px w-16 bg-gradient-to-l from-transparent sm:w-28" />
     </div>
+  );
+}
+
+/**
+ * A whole section that is nothing but a heading and some paragraphs.
+ *
+ * Several blocks of the legacy copy are exactly this shape, and two pages show
+ * the same "Why Hindustani Classical Music" block, so it lives here once rather
+ * than being re-typed per page. `swaraIndex` stays a prop because a section's
+ * place in the scale is a property of the page it sits on, not of the content.
+ */
+export function ProseSection({
+  block,
+  swaraIndex,
+  ground = "ivory",
+  size = "base",
+}: {
+  block: ContentBlock;
+  swaraIndex?: number;
+  ground?: SectionGround;
+  /** "lg" for a short standalone block; "base" for long-form copy. */
+  size?: "base" | "lg";
+}) {
+  return (
+    <Section
+      id={block.key}
+      eyebrow={block.eyebrow}
+      title={block.title}
+      swaraIndex={swaraIndex}
+      ground={ground}
+    >
+      <div className="max-w-3xl space-y-5">
+        {block.body.map((paragraph) => (
+          <Reveal key={paragraph.slice(0, 40)}>
+            <p
+              className={cn(
+                "text-ink-muted",
+                size === "lg" ? "text-lg" : undefined,
+              )}
+            >
+              {paragraph}
+            </p>
+          </Reveal>
+        ))}
+      </div>
+    </Section>
   );
 }

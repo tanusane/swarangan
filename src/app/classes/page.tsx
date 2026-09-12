@@ -8,7 +8,7 @@ import { BreadcrumbSchema } from "@/components/seo/structured-data";
 import { ButtonLink } from "@/components/ui/button";
 import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
-import { Section } from "@/components/ui/section";
+import { ProseSection, Section } from "@/components/ui/section";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { whyBlock } from "@/content/home";
 import { feePlans, FEES_PUBLISHED } from "@/content/fees";
@@ -53,20 +53,7 @@ export default function ClassesPage() {
         <ClassOfferingsGrid headingLevel="h2" />
       </Section>
 
-      <Section
-        eyebrow={whyBlock.eyebrow}
-        title={whyBlock.title}
-        swaraIndex={1}
-        ground="sand"
-      >
-        <div className="max-w-3xl space-y-5">
-          {whyBlock.body.map((paragraph) => (
-            <Reveal key={paragraph.slice(0, 40)}>
-              <p className="text-ink-muted text-lg">{paragraph}</p>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
+      <ProseSection block={whyBlock} swaraIndex={1} ground="sand" size="lg" />
 
       <Section
         eyebrow="Where classes happen"
