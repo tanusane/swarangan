@@ -122,7 +122,7 @@ export function Header() {
           <a
             href={telHref}
             className={cn(
-              "inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors",
+              "inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-colors",
               transparent
                 ? "text-sand-100 hover:text-white"
                 : "hover:text-magenta-700 text-blue-800",

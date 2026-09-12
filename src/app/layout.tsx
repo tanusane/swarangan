@@ -4,6 +4,7 @@ import { Inter, Marcellus, Noto_Sans_Devanagari } from "next/font/google";
 import { DroneLine } from "@/components/layout/drone-line";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { SitarLoader } from "@/components/layout/sitar-loader";
 import { WhatsAppFab } from "@/components/layout/whatsapp-fab";
 import { OrganizationSchema } from "@/components/seo/structured-data";
 import { siteConfig } from "@/lib/site-config";
@@ -107,6 +108,7 @@ export default function RootLayout({
           Skip to content
         </a>
 
+        <SitarLoader />
         <OrganizationSchema />
         <DroneLine />
         <Header />

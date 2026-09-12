@@ -38,7 +38,11 @@ const ASSETS = [
     source: "Swarangan-Logo/SwaranganLogo.PNG",
     out: "brand/logo.png",
     alt: "Swarangan — a songbird singing in a tree, beside the Swarangan wordmark",
-    maxEdge: 1200,
+    // Kept at native size deliberately. Downscaling a transparent logo
+    // resamples its alpha and leaves a faint halo of low-alpha pixels around
+    // the artwork — invisible on ivory, but a visible rectangular haze on the
+    // deep-blue hero. next/image generates the per-breakpoint sizes instead,
+    // which it does without that artifact.
     dropBackground: true,
   },
   {
@@ -54,7 +58,7 @@ const ASSETS = [
     source: "brand-derived/logo-reverse.png",
     out: "brand/logo-reverse.png",
     alt: "Swarangan — a songbird singing in a tree, beside the Swarangan wordmark",
-    maxEdge: 1200,
+    // Native size, for the reason given on brand/logo.png above.
   },
   {
     source: "assets-source/legacy/home-2.jpg",

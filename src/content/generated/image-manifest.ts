@@ -12,8 +12,8 @@ export interface ManifestImage {
 export const imageManifest = {
   "brand/logo.png": {
     src: "/images/brand/logo.png",
-    width: 1200,
-    height: 510,
+    width: 1481,
+    height: 629,
     alt: "Swarangan — a songbird singing in a tree, beside the Swarangan wordmark",
     blurDataURL:
       "data:image/webp;base64,UklGRjgAAABXRUJQVlA4ICwAAACQAQCdASoQAAcAA8BgJZQAApJy0jIA/vYSHLSkR/61WZ0+/FrVO0EMJHAAAA==",
@@ -24,15 +24,15 @@ export const imageManifest = {
     height: 512,
     alt: "The Swarangan tree and songbird mark",
     blurDataURL:
-      "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADQAQCdASoQABAAA8BgJQAAW5w+SgIRgAD+9go4VtdKHdYW9glhnMF8dXv3kS3Bnh0fRtEMZm18AAAA",
+      "data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADQAQCdASoQABAAA8BgJQAAW5w+WUeVAAD+9go4VtdKHdYW9glhnMF8l8W5gbgb2qX133VbzrTTIAAA",
   },
   "brand/logo-reverse.png": {
     src: "/images/brand/logo-reverse.png",
-    width: 1200,
-    height: 510,
+    width: 1481,
+    height: 629,
     alt: "Swarangan — a songbird singing in a tree, beside the Swarangan wordmark",
     blurDataURL:
-      "data:image/webp;base64,UklGRjQAAABXRUJQVlA4ICgAAADQAQCdASoQAAcAA8BgJZQAAp0wm4UoAAD+9hIctKRLAzZ3GBEf80AA",
+      "data:image/webp;base64,UklGRjYAAABXRUJQVlA4ICoAAACwAQCdASoQAAcAA8BgJZQAAhdIeB4AAP72Ehy0qUwH9nNKf6+qAaAAAAA=",
   },
   "people/tanuja-sane-tanpura.jpg": {
     src: "/images/people/tanuja-sane-tanpura.jpg",
@@ -56,7 +56,7 @@ export const imageManifest = {
     height: 225,
     alt: "Suro Bharati Sangeet Kala Kendra emblem",
     blurDataURL:
-      "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAAAwAgCdASoQABAAA8BgJZgCdAEfboGegSUlAAD+7lsqQ/si68hosuQuwqROu8Xd/QS9XeJEVHTgjDRrwx7W9iqkzTIAAA==",
+      "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAABQAgCdASoQABAAA8BgJZgCdAEfcYVFyVq3CAAA/u5bKkP7Iuu3WoZwutaxbHEm1NrZS1jloHHk/S91L8kQpE0GaoAAAA==",
   },
   "instruments/tanpura-and-tabla.jpg": {
     src: "/images/instruments/tanpura-and-tabla.jpg",

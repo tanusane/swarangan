@@ -3,10 +3,12 @@ import {
   LocationsGrid,
 } from "@/components/classes/offering-grids";
 import { Hero } from "@/components/home/hero";
+import { SectionAside } from "@/components/home/section-aside";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { ProseSection, Section, SwarDivider } from "@/components/ui/section";
 import { SwarImage } from "@/components/ui/swar-image";
+import { sectionAsides } from "@/content/asides";
 import {
   examinationHeading,
   introBlocks,
@@ -39,27 +41,22 @@ export default function HomePage() {
           swaraIndex={i}
           ground={i % 2 === 0 ? "ivory" : "sand"}
         >
-          <div className="grid gap-10 lg:grid-cols-12">
-            <div className="space-y-5 lg:col-span-8">
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="space-y-5 lg:col-span-7">
               {block.body.map((paragraph, p) => (
                 <Reveal key={paragraph.slice(0, 40)} delay={p * 0.06}>
-                  <p className="text-ink-muted max-w-prose">{paragraph}</p>
+                  <p className="text-ink-muted">{paragraph}</p>
                 </Reveal>
               ))}
             </div>
 
-            {/* A single decorative photograph anchors the first block only, so
-                the remaining text sections stay calm and print-like. */}
-            {i === 0 && (
-              <Reveal variant="leaf" className="lg:col-span-4">
-                <figure className="overflow-hidden rounded-(--radius-card) shadow-(--shadow-lift)">
-                  <SwarImage
-                    image="instruments/tanpura-and-tabla.jpg"
-                    sizes="(min-width: 1024px) 30vw, 90vw"
-                    className="aspect-4/3 object-cover"
-                  />
-                </figure>
-              </Reveal>
+            {/* The margin panel. Its contents are drawn from this very
+                section's copy, so the right-hand column carries something
+                worth reading rather than decoration. */}
+            {sectionAsides[block.key] && (
+              <div className="lg:col-span-5">
+                <SectionAside panel={sectionAsides[block.key]!} />
+              </div>
             )}
           </div>
         </Section>

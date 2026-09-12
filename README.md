@@ -149,6 +149,14 @@ and a final performance and accessibility pass.
   `src/content/fees.ts`). No figures were invented — a wrong fee on a live site
   is worse than none. Phase 2 makes this a toggle in the admin panel.
 - **Instagram** is built but switched off until an account exists.
+- **A faint rectangle outlines the hero logo.** Traced to the logo image's own
+  rendered box (hit-testing the edge lands on the `<img>`), not to any CSS
+  border — so something remains at the very edge of the PNG. The flood-fill
+  background removal fixed the off-white border frame the source actually has,
+  and the low-alpha haze is now measurably 0.00%, but the artefact persists.
+  Next step: dump the processed PNG's full perimeter alpha rather than sampling
+  two pixels, and check whether next/image's `w=3840` upscale path is
+  resampling it.
 - **YouTube's "latest uploads" feed** currently returns 404 for the Swarangan
   channel — Google has been restricting that endpoint. The section simply does
   not render; the curated video list is unaffected. See the note in

@@ -335,13 +335,44 @@
   }
 }
 
-/* The tanpura string: a plucked line settling back to rest. */
-@keyframes string-pluck {
+/* A struck sitar string, vibrating and settling. Scaled on X about its centre
+   so the line appears to blur sideways the way a real string does. */
+@keyframes sitar-string {
   0%,
   100% {
     transform: scaleX(1);
+    opacity: 0.45;
   }
   50% {
-    transform: scaleX(2.6);
+    transform: scaleX(3.4);
+    opacity: 0.9;
+  }
+}
+
+/* The note rising away from the instrument. */
+@keyframes note-rise {
+  0% {
+    transform: translate(0, 6px);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(14px, -26px);
+    opacity: 0;
+  }
+}
+
+/* Each swara lighting up in turn, as if the scale were being tuned. */
+@keyframes swar-light {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
   }
 }
