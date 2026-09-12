@@ -1,26 +1,347 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   Swarangan design tokens
+
+   Colour ramps are generated from the two colours sampled out of the logo
+   (magenta #A02F6C, blue #054B96) by scripts/build-palette.mjs, which also
+   gates every text/background pair we ship against WCAG AA.
+   ========================================================================== */
+
+@theme {
+  /* -- Magenta: the tree, the songbird, the note. Primary accent. ---------- */
+  --color-magenta-50: #fff1f7;
+  --color-magenta-100: #fbe2ec;
+  --color-magenta-200: #f8cadd;
+  --color-magenta-300: #eea9c7;
+  --color-magenta-400: #da7ea9;
+  --color-magenta-500: #bd5087;
+  --color-magenta-600: #a02f6c; /* sampled from logo */
+  --color-magenta-700: #811553;
+  --color-magenta-800: #6b0943;
+  --color-magenta-900: #560435;
+  --color-magenta-950: #370020;
+
+  /* -- Blue: the wordmark. Structure and headings. ------------------------- */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dfebfc;
+  --color-blue-200: #c4dbfa;
+  --color-blue-300: #a0c3f2;
+  --color-blue-400: #72a2e2;
+  --color-blue-500: #437ec9;
+  --color-blue-600: #1d5ca9;
+  --color-blue-700: #054b96; /* sampled from logo */
+  --color-blue-800: #003977;
+  --color-blue-900: #002c60;
+  --color-blue-950: #00193f;
+
+  /* -- Sand: warm neutrals. The page is ivory, never clinical white. ------- */
+  --color-sand-50: #fdfbf7;
+  --color-sand-100: #faf6ef;
+  --color-sand-200: #f2e9dd;
+  --color-sand-300: #e6d9c7;
+  --color-sand-400: #d3c0a6;
+  --color-sand-500: #b99f7e;
+  --color-sand-600: #9c7f5e;
+  --color-sand-700: #7c6348;
+  --color-sand-800: #5c4936;
+  --color-sand-900: #3d3024;
+  --color-sand-950: #221b14;
+
+  /* -- Gold: ornament and dividers only. Never body text on light. --------- */
+  --color-gold-50: #f9f5eb;
+  --color-gold-100: #f1e9d7;
+  --color-gold-200: #e6d8b4;
+  --color-gold-300: #d4bf86;
+  --color-gold-400: #c9a227;
+  --color-gold-500: #9b7700;
+  --color-gold-600: #7b5600;
+  --color-gold-700: #654300;
+  --color-gold-800: #533500;
+  --color-gold-900: #422900;
+  --color-gold-950: #291700;
+
+  /* -- Semantic aliases --------------------------------------------------- */
+  --color-ink: var(--color-sand-950);
+  --color-ink-muted: var(--color-sand-800);
+  --color-ground: var(--color-sand-50);
+  --color-ground-alt: var(--color-sand-200);
+  --color-accent: var(--color-magenta-600);
+  --color-accent-strong: var(--color-magenta-700);
+  --color-structure: var(--color-blue-700);
+  --color-structure-deep: var(--color-blue-950);
+
+  /* -- Type --------------------------------------------------------------- */
+  --font-display: var(--font-marcellus), ui-serif, Georgia, serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-devanagari: var(--font-noto-devanagari), var(--font-inter), sans-serif;
+
+  /* Fluid scale. Each step interpolates between a 360px and a 1440px viewport,
+     which is what removes the font-size inconsistency of the old site. */
+  --text-2xs: clamp(0.6875rem, 0.66rem + 0.12vw, 0.75rem);
+  --text-xs: clamp(0.75rem, 0.72rem + 0.15vw, 0.8125rem);
+  --text-sm: clamp(0.8125rem, 0.78rem + 0.18vw, 0.9375rem);
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.13rem + 0.55vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 0.9vw, 2rem);
+  --text-3xl: clamp(1.875rem, 1.5rem + 1.6vw, 2.75rem);
+  --text-4xl: clamp(2.25rem, 1.7rem + 2.4vw, 3.75rem);
+  --text-5xl: clamp(2.75rem, 1.9rem + 3.7vw, 5rem);
+  --text-6xl: clamp(3.25rem, 1.9rem + 5.8vw, 7rem);
+
+  /* -- Rhythm ------------------------------------------------------------- */
+  --spacing-section: clamp(4rem, 3rem + 5vw, 8rem);
+  --spacing-gutter: clamp(1.25rem, 0.9rem + 1.6vw, 2.5rem);
+
+  /* -- Motion. One easing vocabulary, used everywhere. -------------------- */
+  --ease-swar: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-drift: cubic-bezier(0.45, 0, 0.55, 1);
+  --duration-quick: 200ms;
+  --duration-base: 420ms;
+  --duration-slow: 900ms;
+
+  /* -- Radii and shadows. Soft and warm, not neon. ------------------------ */
+  --radius-card: 0.875rem;
+  --shadow-lift:
+    0 1px 2px rgb(34 27 20 / 0.04), 0 8px 24px -6px rgb(34 27 20 / 0.1);
+  --shadow-lift-lg:
+    0 2px 4px rgb(34 27 20 / 0.05), 0 24px 48px -12px rgb(34 27 20 / 0.16);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* ==========================================================================
+   Base
+   ========================================================================== */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-sand-300);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* The sticky header is 4.5rem; anchored sections must clear it. */
+    scroll-padding-top: 5.5rem;
+  }
+
+  body {
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    color: var(--color-blue-800);
+    line-height: 1.12;
+    text-wrap: balance;
+    font-weight: 400;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--color-magenta-200);
+    color: var(--color-magenta-900);
+  }
+
+  /* Focus is always visible and always on-brand. */
+  :focus-visible {
+    outline: 2px solid var(--color-magenta-600);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* -- Scrollbar: the magenta-to-blue gradient of the logo ---------------- */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-sand-100);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      to bottom,
+      var(--color-magenta-600),
+      var(--color-blue-700)
+    );
+    border: 3px solid var(--color-sand-100);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(
+      to bottom,
+      var(--color-magenta-700),
+      var(--color-blue-800)
+    );
+  }
+
+  /* Firefox cannot gradient a thumb; give it the magenta. */
+  @supports (scrollbar-color: red blue) {
+    html {
+      scrollbar-color: var(--color-magenta-600) var(--color-sand-100);
+    }
+  }
+
+  /* Media defaults so a missing width/height can never shift layout. */
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ==========================================================================
+   Reduced motion — honoured globally, not per component.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Ken Burns and the drifting swar motif are decorative; stop them dead. */
+  [data-motion="decorative"] {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
+
+@utility container-swar {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--spacing-gutter);
+  max-width: 80rem;
+}
+
+@utility container-prose {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--spacing-gutter);
+  max-width: 46rem;
+}
+
+/* Balanced headline wrapping for short display text. */
+@utility text-balance-display {
+  text-wrap: balance;
+  hyphens: none;
+}
+
+/* ==========================================================================
+   Raga-hour hero scrim
+
+   Ragas are tied to times of day, so the hero scrim shifts temperature with the
+   visitor's local hour. Expressed in CSS and selected by a `data-raga`
+   attribute, so the hour never becomes React state and can never cause a
+   hydration mismatch — the default below renders on the server and the client
+   swaps the attribute once mounted.
+
+   Every variant keeps the dark end opaque enough for AA text over any
+   photograph.
+   ========================================================================== */
+
+.raga-scrim {
+  background-image: linear-gradient(
+    to top right,
+    color-mix(in oklab, var(--color-blue-950) 92%, transparent),
+    color-mix(in oklab, var(--color-blue-950) 60%, transparent),
+    color-mix(in oklab, var(--color-blue-900) 45%, transparent)
+  );
+}
+
+/* Bhairav — dawn. Warm amber lift. */
+[data-raga="dawn"] .raga-scrim {
+  background-image: linear-gradient(
+    to top right,
+    color-mix(in oklab, var(--color-blue-950) 92%, transparent),
+    color-mix(in oklab, var(--color-blue-950) 55%, transparent),
+    color-mix(in oklab, var(--color-gold-900) 45%, transparent)
+  );
+}
+
+/* Midday. Clear and cool. */
+[data-raga="day"] .raga-scrim {
+  background-image: linear-gradient(
+    to top right,
+    color-mix(in oklab, var(--color-blue-950) 92%, transparent),
+    color-mix(in oklab, var(--color-blue-950) 50%, transparent),
+    color-mix(in oklab, var(--color-blue-800) 40%, transparent)
+  );
+}
+
+/* Yaman — dusk. Magenta glow. */
+[data-raga="dusk"] .raga-scrim {
+  background-image: linear-gradient(
+    to top right,
+    color-mix(in oklab, var(--color-blue-950) 92%, transparent),
+    color-mix(in oklab, var(--color-blue-950) 55%, transparent),
+    color-mix(in oklab, var(--color-magenta-900) 50%, transparent)
+  );
+}
+
+/* Night. Deepest. */
+[data-raga="night"] .raga-scrim {
+  background-image: linear-gradient(
+    to top right,
+    color-mix(in oklab, var(--color-blue-950) 95%, transparent),
+    color-mix(in oklab, var(--color-blue-950) 70%, transparent),
+    color-mix(in oklab, var(--color-blue-950) 60%, transparent)
+  );
+}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+
+/* Slow drift across a hero photograph. Scale never drops below 1 so the frame
+   can never reveal an edge. */
+@keyframes kenburns {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.09) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+
+/* The tanpura string: a plucked line settling back to rest. */
+@keyframes string-pluck {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  50% {
+    transform: scaleX(2.6);
+  }
 }
