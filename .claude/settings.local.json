@@ -11,7 +11,9 @@
       "Bash(npx eslint *)",
       "Bash(sed 's/.*>//')",
       "Bash(node -e \"const p=require\\('./package.json'\\);p.scripts.duplication='jscpd src --min-lines 12 --threshold 3 --reporters consoleFull';require\\('fs'\\).writeFileSync\\('package.json',JSON.stringify\\(p,null,2\\)+'\\\\n'\\)\")",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git -c core.safecrlf=false commit -q -m ' *)"
     ]
   }
 }

@@ -165,13 +165,13 @@ export function Hero() {
       <div aria-hidden="true" className="raga-scrim absolute inset-0 -z-10" />
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-t from-blue-950 via-blue-950/70 to-transparent md:bg-gradient-to-r md:from-blue-950 md:via-blue-950/80 md:to-transparent"
+        className="absolute inset-0 -z-10 bg-gradient-to-t from-blue-950 via-blue-950/70 to-transparent md:bg-gradient-to-r md:from-blue-950 md:via-blue-950/88 md:via-55% md:to-blue-950/20"
       />
       {/* Suppresses the projected logo on the stage screen, which otherwise
           competes with our own wordmark in the upper half of the frame. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 -z-10 bg-gradient-to-b from-blue-950 from-5% via-blue-950/55 via-45% to-transparent"
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-blue-950 from-5% via-blue-950/70 via-50% to-blue-950/25"
       />
 
       {/* -- Drifting swar notes --------------------------------------------- */}
