@@ -28,8 +28,13 @@ export const siteConfig = {
   description:
     "Swarangan teaches Hindustani classical, semi-classical and light vocal music in Singapore. Individual and group classes for children and adults, in person, at home or online.",
 
-  /** Drives canonical URLs, sitemap and OG tags. Set per environment. */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.swarangan.sg",
+  /**
+   * Drives canonical URLs, sitemap and OG tags. Set per environment. Trailing
+   * slashes are dropped, so "https://x.app/" cannot produce "//admin" links.
+   */
+  url: (
+    process.env.NEXT_PUBLIC_SITE_URL?.trim() || "https://www.swarangan.sg"
+  ).replace(/\/+$/, ""),
 
   contact: {
     phoneE164: PHONE_E164,
