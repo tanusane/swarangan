@@ -19,7 +19,7 @@ export type SettingsResult =
  * sends — it can only ever be set by the import itself.
  */
 export async function saveSettings(
-  values: Record<string, string>,
+  values: Record<string, string | boolean>,
 ): Promise<SettingsResult> {
   const admin = await requireAdmin();
 

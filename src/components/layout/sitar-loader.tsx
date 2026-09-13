@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 import { cn } from "@/lib/utils";
@@ -7,96 +8,51 @@ import { cn } from "@/lib/utils";
 /**
  * The landing animation: a sitar being played.
  *
- * Two rules govern this, because a splash screen is the easiest thing in web
- * design to get wrong:
+ * It plays every time the home page is opened — on first arrival, on refresh,
+ * and on coming back to Home from another page — and holds for a few seconds so
+ * the animation can be enjoyed rather than glimpsed. Other pages never show it.
  *
- *   1. It can never trap anyone. It dismisses on `load`, and unconditionally
- *      after MAX_MS whatever happens — so a stalled asset cannot hold the site
- *      hostage. It is also click-to-skip and Escape-to-skip.
- *   2. It shows once per session, not once per page view. Seeing it on every
- *      navigation would be infuriating, and it would undo the speed of a
- *      statically generated site.
- *
- * It is skipped entirely for anyone who prefers reduced motion, and the page
- * behind it is fully rendered the whole time — this is an overlay, never a gate
- * on content, so it costs nothing in SEO.
+ * It can never trap anyone: it is click-to-skip and Escape-to-skip, and the page
+ * behind it is fully rendered the whole time — an overlay, never a gate on
+ * content, so it costs nothing in SEO. Anyone who prefers reduced motion never
+ * sees it at all.
  */
 
-/** Hard ceiling. The site is static and usually ready well before this. */
-const MAX_MS = 2100;
-/** Minimum, so the animation reads as intentional rather than a flicker. */
-const MIN_MS = 1100;
-const SESSION_KEY = "swarangan:seen-intro";
+/** How long the intro holds before fading out. */
+const INTRO_MS = 3500;
+/** Length of the fade-out, matched to the CSS transition below. */
+const FADE_MS = 600;
 
-/**
- * Whether to play the intro, decided once per page load.
- *
- * Memoised at module scope so it is a stable snapshot: `useSyncExternalStore`
- * requires getSnapshot to return the same value until the store changes, and
- * this store never changes. Read-only — the session key is written later, in an
- * effect, so this stays safe to call during render.
- */
-let decision: boolean | null = null;
-
-function shouldPlayIntro(): boolean {
-  if (decision !== null) return decision;
-
-  // Anyone who has asked for reduced motion never sees it.
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    decision = false;
-    return decision;
-  }
-
-  // sessionStorage throws in some privacy modes; a failure here must never
-  // break the page, so it simply means "show the animation".
-  try {
-    decision = sessionStorage.getItem(SESSION_KEY) === null;
-  } catch {
-    decision = true;
-  }
-  return decision;
-}
-
-/** The store never emits; the value is fixed for the life of the page. */
+/** The store never emits; the preference is read once per page load. */
 const noopSubscribe = () => () => {};
+const prefersMotion = () =>
+  !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 /** The server cannot know, so it renders nothing and the client decides. */
 const neverOnServer = () => false;
 
 export function SitarLoader() {
-  const play = useSyncExternalStore(
+  const pathname = usePathname();
+  const motionOk = useSyncExternalStore(
     noopSubscribe,
-    shouldPlayIntro,
+    prefersMotion,
     neverOnServer,
   );
+
+  // Leaving Home unmounts the intro, so returning mounts a fresh one that plays
+  // again from the start.
+  return motionOk && pathname === "/" ? <SitarIntro /> : null;
+}
+
+function SitarIntro() {
   const [dismissed, setDismissed] = useState(false);
   const [leaving, setLeaving] = useState(false);
 
-  const visible = play && !dismissed;
+  const visible = !dismissed;
 
   useEffect(() => {
     if (!visible) return;
 
-    // Claim the session here rather than during render, so a re-render can
-    // never consume the one showing we allow per session.
-    try {
-      sessionStorage.setItem(SESSION_KEY, "1");
-    } catch {
-      /* nothing to do — the ceiling below still dismisses it */
-    }
-
-    const startedAt = Date.now();
-    let dismissTimer: number | undefined;
-
-    const dismiss = () => {
-      const elapsed = Date.now() - startedAt;
-      const wait = Math.max(0, MIN_MS - elapsed);
-      dismissTimer = window.setTimeout(() => setLeaving(true), wait);
-    };
-
-    // Whichever comes first: the page finishing, or the hard ceiling.
-    const ceiling = window.setTimeout(() => setLeaving(true), MAX_MS);
-    if (document.readyState === "complete") dismiss();
-    else window.addEventListener("load", dismiss, { once: true });
+    const timer = window.setTimeout(() => setLeaving(true), INTRO_MS);
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setLeaving(true);
@@ -106,11 +62,10 @@ export function SitarLoader() {
     // Nothing behind the overlay should scroll while it is up.
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    window.scrollTo(0, 0);
 
     return () => {
-      window.clearTimeout(ceiling);
-      if (dismissTimer) window.clearTimeout(dismissTimer);
-      window.removeEventListener("load", dismiss);
+      window.clearTimeout(timer);
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = previousOverflow;
     };
@@ -119,7 +74,7 @@ export function SitarLoader() {
   // Remove from the tree once the fade-out has finished.
   useEffect(() => {
     if (!leaving) return;
-    const timer = window.setTimeout(() => setDismissed(true), 600);
+    const timer = window.setTimeout(() => setDismissed(true), FADE_MS);
     return () => window.clearTimeout(timer);
   }, [leaving]);
 

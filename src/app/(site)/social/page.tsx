@@ -2,6 +2,10 @@ import { ExternalLink } from "lucide-react";
 import type { Metadata } from "next";
 
 import { BreadcrumbSchema } from "@/components/seo/structured-data";
+import {
+  FacebookPagePreview,
+  InstagramEmbed,
+} from "@/components/social/platform-embeds";
 import { YouTubeFacade } from "@/components/social/youtube-facade";
 import { ButtonLink } from "@/components/ui/button";
 import {
@@ -12,13 +16,18 @@ import {
 import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
-import { getSettings, getVideos } from "@/lib/cms/repository";
+import { SocialLinks } from "@/components/ui/social-links";
+import {
+  getInstagramPosts,
+  getSettings,
+  getVideos,
+} from "@/lib/cms/repository";
 import { latestChannelUploads } from "@/lib/youtube-feed";
 
 export const metadata: Metadata = {
   title: "Social Presence",
   description:
-    "Watch Swarangan's Hindustani classical and semi-classical vocal performances on YouTube, and follow the school on Facebook.",
+    "Watch Swarangan's Hindustani classical and semi-classical vocal performances on YouTube, and follow the school on Instagram and Facebook.",
   alternates: { canonical: "/social" },
 };
 
@@ -26,21 +35,29 @@ export const metadata: Metadata = {
    changes on its own, and it does not change often. */
 export const revalidate = 3600;
 
+const GRID = "grid gap-8 sm:grid-cols-2 lg:grid-cols-3";
+
+/**
+ * Social Presence, one section per platform. Each platform's section can be
+ * switched off in the admin settings; Instagram posts and YouTube videos are
+ * curated in the admin too.
+ */
 export default async function SocialPage() {
-  const [featuredVideos, settings] = await Promise.all([
+  const [videos, instagramPosts, settings] = await Promise.all([
     getVideos(),
+    getInstagramPosts(),
     getSettings(),
   ]);
-  const featured = featuredVideos.filter((video) => video.featured);
-  const archive = featuredVideos.filter((video) => !video.featured);
 
-  // Keyless public RSS. Returns [] if YouTube is unreachable, so the page
-  // renders its curated content regardless.
-  const uploads = await latestChannelUploads();
-  const curatedIds = new Set(featuredVideos.map((video) => video.youtubeId));
-  const recent = uploads
-    .filter((upload) => !curatedIds.has(upload.youtubeId))
-    .slice(0, 6);
+  const platforms = [
+    settings.showYouTube && "youtube",
+    settings.showInstagram && "instagram",
+    settings.showFacebook && "facebook",
+  ].filter((value): value is "youtube" | "instagram" | "facebook" => !!value);
+
+  // Alternate the ground colour down the page, whichever sections are on.
+  const groundFor = (platform: (typeof platforms)[number]) =>
+    platforms.indexOf(platform) % 2 === 0 ? "ivory" : "sand";
 
   return (
     <>
@@ -58,54 +75,137 @@ export default async function SocialPage() {
         image="events/af2026-thumri-se-ghazal-tak.jpg"
       />
 
-      {/* -- Featured performances ------------------------------------------- */}
-      <Section
-        eyebrow="On YouTube"
-        title="Featured performances"
-        swaraIndex={0}
-      >
-        <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {featured.map((video, i) => (
-            <Reveal key={video.key} as="li" variant="leaf" delay={i * 0.07}>
-              <YouTubeFacade
-                youtubeId={video.youtubeId}
-                title={video.title}
-                legacyCaption={video.legacyCaption}
-              />
-            </Reveal>
-          ))}
-        </ul>
+      {platforms.includes("youtube") && (
+        <YouTubeSection
+          videos={videos}
+          channelUrl={settings.youtube}
+          ground={groundFor("youtube")}
+        />
+      )}
 
-        <Reveal delay={0.2}>
-          <div className="mt-12 flex flex-wrap gap-3">
-            <ButtonLink href={settings.youtube} variant="primary">
-              <YouTubeIcon className="size-5" />
-              Visit our YouTube channel
-              <ExternalLink aria-hidden="true" className="size-4" />
-            </ButtonLink>
-            <ButtonLink href={settings.instagram} variant="secondary">
-              <InstagramIcon className="size-5" />
-              Follow on Instagram
-              <ExternalLink aria-hidden="true" className="size-4" />
-            </ButtonLink>
-            <ButtonLink href={settings.facebook} variant="secondary">
-              <FacebookIcon className="size-5" />
-              Follow on Facebook
-              <ExternalLink aria-hidden="true" className="size-4" />
-            </ButtonLink>
-          </div>
-        </Reveal>
-      </Section>
-
-      {/* -- More from the archive ------------------------------------------- */}
-      {archive.length > 0 && (
+      {platforms.includes("instagram") && (
         <Section
-          eyebrow="From the archive"
-          title="More recordings"
-          swaraIndex={1}
-          ground="sand"
+          id="instagram"
+          eyebrow="On Instagram"
+          title="Reels, rehearsals and moments from class"
+          swaraIndex={3}
+          ground={groundFor("instagram")}
         >
-          <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {instagramPosts.length > 0 && (
+            <ul className={GRID}>
+              {instagramPosts.map((post, i) => (
+                <Reveal key={post.key} as="li" delay={i * 0.07}>
+                  <InstagramEmbed embedRef={post.ref} title={post.title} />
+                </Reveal>
+              ))}
+            </ul>
+          )}
+          <Reveal>
+            <div className="mt-10 flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+              <p className="text-ink-muted max-w-xl text-lg">
+                Follow{" "}
+                <a
+                  href={settings.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-magenta-700 font-medium underline-offset-4 hover:underline"
+                >
+                  @swarangan.sg
+                </a>{" "}
+                for the latest from Swarangan.
+              </p>
+              <ButtonLink href={settings.instagram} size="lg">
+                <InstagramIcon className="size-5" />
+                Open Instagram
+                <ExternalLink aria-hidden="true" className="size-4" />
+              </ButtonLink>
+            </div>
+          </Reveal>
+        </Section>
+      )}
+
+      {platforms.includes("facebook") && (
+        <Section
+          id="facebook"
+          eyebrow="On Facebook"
+          title="News and events"
+          swaraIndex={4}
+          ground={groundFor("facebook")}
+        >
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            <Reveal>
+              <FacebookPagePreview pageUrl={settings.facebook} />
+            </Reveal>
+            <Reveal delay={0.1}>
+              <div className="space-y-6">
+                <p className="text-ink-muted max-w-md text-lg">
+                  Announcements, annual functions and photos from the Swarangan
+                  community.
+                </p>
+                <ButtonLink href={settings.facebook} size="lg">
+                  <FacebookIcon className="size-5" />
+                  Follow on Facebook
+                  <ExternalLink aria-hidden="true" className="size-4" />
+                </ButtonLink>
+              </div>
+            </Reveal>
+          </div>
+        </Section>
+      )}
+
+      {platforms.length === 0 && (
+        <Section title="Find us online" align="center">
+          <SocialLinks settings={settings} className="justify-center" />
+        </Section>
+      )}
+    </>
+  );
+}
+
+async function YouTubeSection({
+  videos,
+  channelUrl,
+  ground,
+}: {
+  videos: Awaited<ReturnType<typeof getVideos>>;
+  channelUrl: `https://${string}`;
+  ground: "ivory" | "sand";
+}) {
+  const featured = videos.filter((video) => video.featured);
+  const archive = videos.filter((video) => !video.featured);
+
+  // Keyless public RSS. Returns [] if YouTube is unreachable, so the page
+  // renders its curated content regardless.
+  const uploads = await latestChannelUploads();
+  const curatedIds = new Set(videos.map((video) => video.youtubeId));
+  const recent = uploads
+    .filter((upload) => !curatedIds.has(upload.youtubeId))
+    .slice(0, 6);
+
+  return (
+    <Section
+      id="youtube"
+      eyebrow="On YouTube"
+      title="Featured performances"
+      swaraIndex={0}
+      ground={ground}
+    >
+      <ul className={GRID}>
+        {featured.map((video, i) => (
+          <Reveal key={video.key} as="li" variant="leaf" delay={i * 0.07}>
+            <YouTubeFacade
+              youtubeId={video.youtubeId}
+              title={video.title}
+              legacyCaption={video.legacyCaption}
+            />
+          </Reveal>
+        ))}
+      </ul>
+
+      {archive.length > 0 && (
+        <>
+          <h3 className="mt-16 mb-8 text-2xl">More recordings</h3>
+          <ul className={GRID}>
             {archive.map((video, i) => (
               <Reveal key={video.key} as="li" delay={i * 0.07}>
                 <YouTubeFacade
@@ -116,17 +216,13 @@ export default async function SocialPage() {
               </Reveal>
             ))}
           </ul>
-        </Section>
+        </>
       )}
 
-      {/* -- Latest uploads, straight from the channel ----------------------- */}
       {recent.length > 0 && (
-        <Section
-          eyebrow="Fresh from the channel"
-          title="Latest uploads"
-          swaraIndex={2}
-        >
-          <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <>
+          <h3 className="mt-16 mb-8 text-2xl">Latest uploads</h3>
+          <ul className={GRID}>
             {recent.map((video, i) => (
               <Reveal key={video.youtubeId} as="li" delay={i * 0.07}>
                 <YouTubeFacade
@@ -136,41 +232,18 @@ export default async function SocialPage() {
               </Reveal>
             ))}
           </ul>
-        </Section>
+        </>
       )}
 
-      {/* -- Instagram --------------------------------------------------------
-          A link to the profile for now. Showing individual posts and reels on
-          this page needs a Meta app access token (Instagram withdrew its public
-          embed API in 2020), so that is planned separately rather than faked. */}
-      <Section
-        eyebrow="On Instagram"
-        title="Reels, rehearsals and moments from class"
-        swaraIndex={3}
-        ground="sand"
-      >
-        <Reveal>
-          <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
-            <p className="text-ink-muted max-w-xl text-lg">
-              Follow{" "}
-              <a
-                href={settings.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-magenta-700 font-medium underline-offset-4 hover:underline"
-              >
-                @swarangan.sg
-              </a>{" "}
-              for the latest from Swarangan.
-            </p>
-            <ButtonLink href={settings.instagram} size="lg">
-              <InstagramIcon className="size-5" />
-              Open Instagram
-              <ExternalLink aria-hidden="true" className="size-4" />
-            </ButtonLink>
-          </div>
-        </Reveal>
-      </Section>
-    </>
+      <Reveal delay={0.2}>
+        <div className="mt-12">
+          <ButtonLink href={channelUrl} variant="secondary">
+            <YouTubeIcon className="size-5" />
+            Visit our YouTube channel
+            <ExternalLink aria-hidden="true" className="size-4" />
+          </ButtonLink>
+        </div>
+      </Reveal>
+    </Section>
   );
 }

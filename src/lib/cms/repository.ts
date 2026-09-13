@@ -34,6 +34,7 @@ import {
   rowsToOfferings,
   rowsToPhotos,
   rowsToTestimonials,
+  rowsToInstagramPosts,
   rowsToVideos,
   type ClassOfferingRow,
   type ContentBlockRow,
@@ -209,6 +210,15 @@ export async function getVideos(): Promise<
     "id, platform, embed_ref, title, legacy_caption, featured, enabled, sort",
   );
   return rows.source === "database" ? rowsToVideos(rows.data) : [...seedVideos];
+}
+
+/** Instagram posts and reels. None ship with the site; they are added in the admin. */
+export async function getInstagramPosts() {
+  const rows = await loadTable<SocialLinkRow>(
+    "social_links",
+    "id, platform, embed_ref, title, legacy_caption, featured, enabled, sort",
+  );
+  return rows.source === "database" ? rowsToInstagramPosts(rows.data) : [];
 }
 
 export async function getFeePlans(): Promise<FeePlan[]> {

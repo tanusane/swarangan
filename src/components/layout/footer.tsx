@@ -62,29 +62,35 @@ export async function Footer() {
                   {addressLineFor(settings)}
                 </address>
               </li>
-              <li className="flex items-center gap-3">
-                <Phone
-                  aria-hidden="true"
-                  className="text-gold-300 size-4 shrink-0"
-                />
-                <a
-                  href={telHrefFor(settings)}
-                  className="text-sand-300 hover:text-gold-300 transition-colors"
-                >
-                  {settings.phoneDisplay}
-                </a>
-                {/* Amit's request: WhatsApp sits right beside the number. */}
-                <a
-                  href={whatsappHrefFor(settings)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Message this number on WhatsApp"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366]/15 px-2.5 py-1 text-xs text-[#5BE39A] transition-colors hover:bg-[#25D366]/25"
-                >
-                  <WhatsAppIcon className="size-3.5" />
-                  WhatsApp
-                </a>
-              </li>
+              {(settings.showPhone || settings.showWhatsApp) && (
+                <li className="flex items-center gap-3">
+                  <Phone
+                    aria-hidden="true"
+                    className="text-gold-300 size-4 shrink-0"
+                  />
+                  {settings.showPhone && (
+                    <a
+                      href={telHrefFor(settings)}
+                      className="text-sand-300 hover:text-gold-300 transition-colors"
+                    >
+                      {settings.phoneDisplay}
+                    </a>
+                  )}
+                  {/* Amit's request: WhatsApp sits right beside the number. */}
+                  {settings.showWhatsApp && (
+                    <a
+                      href={whatsappHrefFor(settings)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Message this number on WhatsApp"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-[#25D366]/15 px-2.5 py-1 text-xs text-[#5BE39A] transition-colors hover:bg-[#25D366]/25"
+                    >
+                      <WhatsAppIcon className="size-3.5" />
+                      WhatsApp
+                    </a>
+                  )}
+                </li>
+              )}
               <li className="flex items-center gap-3">
                 <Mail
                   aria-hidden="true"

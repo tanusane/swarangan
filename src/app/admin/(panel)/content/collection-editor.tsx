@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Field, TextArea, TextInput } from "@/components/ui/field";
+import { Field, TextArea, TextInput, Toggle } from "@/components/ui/field";
 import {
   COLLECTIONS,
   type CollectionKey,
@@ -378,15 +378,12 @@ interface FieldControlProps {
 function FieldControl({ field, value, error, onChange }: FieldControlProps) {
   if (field.type === "boolean") {
     return (
-      <label className="flex items-center gap-2 text-sm text-blue-800">
-        <input
-          type="checkbox"
-          checked={value === true}
-          onChange={(event) => onChange(event.target.checked)}
-          className="accent-magenta-600 size-4"
-        />
-        {field.label}
-      </label>
+      <Toggle
+        label={field.label}
+        hint={field.hint}
+        checked={value === true}
+        onChange={onChange}
+      />
     );
   }
 

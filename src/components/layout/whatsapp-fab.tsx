@@ -13,6 +13,7 @@ import { whatsappHrefFor } from "@/lib/cms/settings";
  */
 export async function WhatsAppFab() {
   const settings = await getSettings();
+  if (!settings.showWhatsApp) return null;
   return (
     <a
       href={whatsappHrefFor(settings)}

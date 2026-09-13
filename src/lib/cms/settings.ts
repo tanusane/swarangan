@@ -31,6 +31,14 @@ export interface SiteSettings {
   instagram: HttpsUrl;
   youtube: HttpsUrl;
   facebook: HttpsUrl;
+  /** Whether the phone number is shown anywhere on the site. */
+  showPhone: boolean;
+  /** Whether WhatsApp buttons are shown anywhere on the site. */
+  showWhatsApp: boolean;
+  /** Sections of the Social Presence page. */
+  showYouTube: boolean;
+  showInstagram: boolean;
+  showFacebook: boolean;
 }
 
 /** A link that must be https — enforced by the schema below. */
@@ -51,6 +59,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   instagram: siteConfig.social.instagram,
   youtube: siteConfig.social.youtube,
   facebook: siteConfig.social.facebook,
+  showPhone: true,
+  showWhatsApp: true,
+  showYouTube: true,
+  showInstagram: true,
+  showFacebook: true,
 };
 
 const text = (max: number) => z.string().trim().min(1).max(max);
@@ -87,7 +100,17 @@ export const SETTINGS_FIELDS = {
   instagram: httpsUrl,
   youtube: httpsUrl,
   facebook: httpsUrl,
-} satisfies { [K in keyof SiteSettings]: z.ZodType<SiteSettings[K], string> };
+  showPhone: z.boolean(),
+  showWhatsApp: z.boolean(),
+  showYouTube: z.boolean(),
+  showInstagram: z.boolean(),
+  showFacebook: z.boolean(),
+} satisfies { [K in keyof SiteSettings]: z.ZodType<SiteSettings[K]> };
+
+/** The on/off settings, which the admin form shows as switches. */
+export type SettingsToggle = {
+  [K in keyof SiteSettings]: SiteSettings[K] extends boolean ? K : never;
+}[keyof SiteSettings];
 
 export const settingsSchema = z.object(SETTINGS_FIELDS);
 

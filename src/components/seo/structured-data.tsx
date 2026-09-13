@@ -34,7 +34,10 @@ function graph(
   classOfferings: readonly ClassOffering[],
   testimonials: readonly Testimonial[],
 ) {
-  const telephone = phoneE164(settings.phoneDisplay);
+  // Left out entirely when the admin has hidden the number from the site.
+  const telephone = settings.showPhone
+    ? phoneE164(settings.phoneDisplay)
+    : undefined;
   return {
     "@context": "https://schema.org",
     "@graph": [

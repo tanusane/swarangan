@@ -124,14 +124,16 @@ export default async function ClassesPage() {
               <ButtonLink href="/contact" size="lg">
                 Enquire about classes
               </ButtonLink>
-              <ButtonLink
-                href={whatsappHrefFor(settings)}
-                variant="whatsapp"
-                size="lg"
-              >
-                <WhatsAppIcon className="size-5" />
-                Ask on WhatsApp
-              </ButtonLink>
+              {settings.showWhatsApp && (
+                <ButtonLink
+                  href={whatsappHrefFor(settings)}
+                  variant="whatsapp"
+                  size="lg"
+                >
+                  <WhatsAppIcon className="size-5" />
+                  Ask on WhatsApp
+                </ButtonLink>
+              )}
             </div>
           </Reveal>
         </div>

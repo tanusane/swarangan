@@ -109,3 +109,50 @@ export function Select({ className, ...rest }: React.ComponentProps<"select">) {
     />
   );
 }
+
+/**
+ * An on/off switch with its label — the one used for every show/hide choice in
+ * the admin. A real checkbox underneath, so it is keyboard- and
+ * screen-reader-friendly for free.
+ */
+export function Toggle({
+  label,
+  hint,
+  checked,
+  onChange,
+}: {
+  label: string;
+  hint?: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <label className="flex cursor-pointer items-start gap-3">
+      <input
+        type="checkbox"
+        role="switch"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="peer sr-only"
+      />
+      <span
+        aria-hidden="true"
+        className={cn(
+          "peer-focus-visible:ring-magenta-600 relative mt-0.5 inline-flex h-6 w-11 shrink-0 rounded-full transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2",
+          checked ? "bg-magenta-600" : "bg-sand-300",
+        )}
+      >
+        <span
+          className={cn(
+            "absolute top-0.5 left-0.5 size-5 rounded-full bg-white shadow transition-transform",
+            checked && "translate-x-5",
+          )}
+        />
+      </span>
+      <span className="text-sm">
+        <span className="block text-blue-800">{label}</span>
+        {hint && <span className="text-ink-muted block text-xs">{hint}</span>}
+      </span>
+    </label>
+  );
+}

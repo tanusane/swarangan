@@ -70,6 +70,35 @@ export function parseYouTubeId(input: string): string | null {
   return candidate && YOUTUBE_ID.test(candidate) ? candidate : null;
 }
 
+// ---- Instagram ----------------------------------------------------------------------
+
+const INSTAGRAM_REF = /^(p|reel)\/([A-Za-z0-9_-]{5,40})$/;
+
+/**
+ * An Instagram post or reel link -> "p/CODE" or "reel/CODE", the part needed to
+ * embed it. Accepts the stored form too, so saving an untouched item works.
+ */
+export function parseInstagramRef(input: string): string | null {
+  const value = input.trim();
+  if (INSTAGRAM_REF.test(value)) return value;
+
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    return null;
+  }
+  const host = url.hostname.replace(/^www\.|^m\./, "");
+  if (host !== "instagram.com") return null;
+
+  const match = url.pathname.match(
+    /^\/(?:[^/]+\/)?(p|reel|reels|tv)\/([A-Za-z0-9_-]{5,40})/,
+  );
+  if (!match) return null;
+  const kind = match[1] === "p" || match[1] === "tv" ? "p" : "reel";
+  return `${kind}/${match[2]}`;
+}
+
 // ---- Keys -----------------------------------------------------------------------------
 
 /** "Annual Function 2026!" -> "annual-function-2026". */
@@ -126,6 +155,19 @@ function fieldSchema(field: FieldDef): z.ZodType<unknown> {
           return z.NEVER;
         }
         return id;
+      });
+
+    case "instagram":
+      return z.string().transform((value, context) => {
+        const ref = parseInstagramRef(value);
+        if (!ref) {
+          context.addIssue({
+            code: "custom",
+            message: "Paste the link of an Instagram post or reel.",
+          });
+          return z.NEVER;
+        }
+        return ref;
       });
 
     case "year":

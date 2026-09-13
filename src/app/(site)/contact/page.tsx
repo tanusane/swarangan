@@ -58,32 +58,40 @@ export default async function ContactPage() {
                   <h2 className="mb-6 text-xl">Reach us directly</h2>
 
                   <ul className="space-y-6 text-sm">
-                    <li className="flex gap-4">
-                      <Phone
-                        aria-hidden="true"
-                        className="text-magenta-600 mt-0.5 size-5 shrink-0"
-                      />
-                      <div>
-                        <p className="font-medium text-blue-800">Phone</p>
-                        <a
-                          href={telHrefFor(settings)}
-                          className="text-ink-muted hover:text-magenta-700 transition-colors"
-                        >
-                          {settings.phoneDisplay}
-                        </a>
-                        {/* Amit's request: WhatsApp right beside the number. */}
-                        <div className="mt-3">
-                          <ButtonLink
-                            href={whatsappHrefFor(settings)}
-                            variant="whatsapp"
-                            size="sm"
-                          >
-                            <WhatsAppIcon className="size-4" />
-                            Message on WhatsApp
-                          </ButtonLink>
+                    {(settings.showPhone || settings.showWhatsApp) && (
+                      <li className="flex gap-4">
+                        <Phone
+                          aria-hidden="true"
+                          className="text-magenta-600 mt-0.5 size-5 shrink-0"
+                        />
+                        <div>
+                          <p className="font-medium text-blue-800">
+                            {settings.showPhone ? "Phone" : "WhatsApp"}
+                          </p>
+                          {settings.showPhone && (
+                            <a
+                              href={telHrefFor(settings)}
+                              className="text-ink-muted hover:text-magenta-700 transition-colors"
+                            >
+                              {settings.phoneDisplay}
+                            </a>
+                          )}
+                          {/* Amit's request: WhatsApp right beside the number. */}
+                          {settings.showWhatsApp && (
+                            <div className="mt-3">
+                              <ButtonLink
+                                href={whatsappHrefFor(settings)}
+                                variant="whatsapp"
+                                size="sm"
+                              >
+                                <WhatsAppIcon className="size-4" />
+                                Message on WhatsApp
+                              </ButtonLink>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    </li>
+                      </li>
+                    )}
 
                     <li className="flex gap-4">
                       <Mail

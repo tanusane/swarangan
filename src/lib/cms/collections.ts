@@ -14,7 +14,13 @@ import { BLOCK_PAGES } from "@/lib/cms/rows";
  */
 
 export type FieldType =
-  "text" | "textarea" | "paragraphs" | "boolean" | "youtube" | "year";
+  | "text"
+  | "textarea"
+  | "paragraphs"
+  | "boolean"
+  | "youtube"
+  | "instagram"
+  | "year";
 
 export interface FieldDef {
   /** Column name in the table. */
@@ -150,6 +156,39 @@ export const COLLECTIONS = {
     canDelete: true,
     scope: { column: "platform", value: "youtube" },
     insertDefaults: { platform: "youtube" },
+  },
+
+  instagramPosts: {
+    table: "social_links",
+    label: "Instagram posts and reels",
+    singular: "Instagram post",
+    intro:
+      "Shown in the Instagram section of the Social Presence page. On Instagram, open the post or reel, tap Share, then Copy link, and paste it here.",
+    idColumn: "id",
+    fields: [
+      {
+        name: "embed_ref",
+        label: "Instagram post or reel link",
+        type: "instagram",
+        required: true,
+        placeholder: "https://www.instagram.com/reel/…",
+      },
+      {
+        name: "title",
+        label: "Short label",
+        type: "text",
+        required: true,
+        max: 120,
+        hint: "Only for you, to tell posts apart here.",
+      },
+    ],
+    titleField: "title",
+    sortable: true,
+    visibility: { column: "enabled", on: "Shown", off: "Hidden" },
+    canCreate: true,
+    canDelete: true,
+    scope: { column: "platform", value: "instagram" },
+    insertDefaults: { platform: "instagram" },
   },
 
   classes: {

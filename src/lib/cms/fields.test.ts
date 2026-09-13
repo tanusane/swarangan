@@ -8,6 +8,7 @@ import {
   itemSchema,
   neighbourFor,
   paragraphsToText,
+  parseInstagramRef,
   parseYouTubeId,
   rowToFormValues,
   slugify,
@@ -196,5 +197,43 @@ describe("keys and ordering", () => {
     expect(isCollectionKey("testimonials")).toBe(true);
     expect(isCollectionKey("students")).toBe(false);
     expect(isCollectionKey("__proto__")).toBe(false);
+  });
+});
+
+describe("parseInstagramRef", () => {
+  it.each([
+    ["https://www.instagram.com/reel/C9abcDEF123/", "reel/C9abcDEF123"],
+    [
+      "https://www.instagram.com/reels/C9abcDEF123/?igsh=xyz",
+      "reel/C9abcDEF123",
+    ],
+    ["https://instagram.com/p/Cxy_12-34/", "p/Cxy_12-34"],
+    ["https://www.instagram.com/swarangan.sg/p/Cxy_12-34/", "p/Cxy_12-34"],
+    ["https://www.instagram.com/tv/Cxy_12-34", "p/Cxy_12-34"],
+    ["reel/C9abcDEF123", "reel/C9abcDEF123"],
+  ])("accepts %s", (input, expected) => {
+    expect(parseInstagramRef(input)).toBe(expected);
+  });
+
+  it.each([
+    "https://www.instagram.com/swarangan.sg/",
+    "https://evil.example/reel/C9abcDEF123",
+    "reel/../../x",
+    "not a link",
+  ])("rejects %s", (input) => {
+    expect(parseInstagramRef(input)).toBeNull();
+  });
+
+  it("validates the Instagram collection through its schema", () => {
+    const schema = itemSchema(COLLECTIONS.instagramPosts);
+    expect(
+      schema.safeParse({
+        embed_ref: "https://www.instagram.com/reel/C9abcDEF123/",
+        title: "Annual function reel",
+      }).data,
+    ).toMatchObject({ embed_ref: "reel/C9abcDEF123" });
+    expect(
+      schema.safeParse({ embed_ref: "https://x.com", title: "x" }).success,
+    ).toBe(false);
   });
 });

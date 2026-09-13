@@ -73,7 +73,7 @@ export function SocialLinks({
           </a>
         </li>
       ))}
-      {includeWhatsApp && (
+      {includeWhatsApp && settings.showWhatsApp && (
         <li>
           <a
             href={whatsappHrefFor(settings)}

@@ -5,7 +5,7 @@ import {
   getSettings,
   getTestimonials,
 } from "@/lib/cms/repository";
-import { addressLineFor } from "@/lib/cms/settings";
+import { addressLineFor, type SiteSettings } from "@/lib/cms/settings";
 import { navigation, siteConfig } from "@/lib/site-config";
 
 /**
@@ -81,8 +81,7 @@ ${testimonials.length} testimonials are published at ${absolute("/testimonials")
 
 ## Contact
 
-- Phone and WhatsApp: ${settings.phoneDisplay}
-- Email: ${settings.email}
+${contactLine(settings)}- Email: ${settings.email}
 - Instagram: ${settings.instagram}
 - YouTube: ${settings.youtube}
 - Facebook: ${settings.facebook}
@@ -98,4 +97,16 @@ ${pages}
       "Cache-Control": "public, max-age=3600",
     },
   });
+}
+
+/** The phone line, honouring the admin's show/hide switches. */
+function contactLine(settings: SiteSettings): string {
+  const channels = [
+    settings.showPhone && "Phone",
+    settings.showWhatsApp && "WhatsApp",
+  ].filter(Boolean);
+  return channels.length > 0
+    ? `- ${channels.join(" and ")}: ${settings.phoneDisplay}
+`
+    : "";
 }

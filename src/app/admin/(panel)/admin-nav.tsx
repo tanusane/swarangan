@@ -30,7 +30,7 @@ const SECTIONS = [
     Icon: MessageSquareQuote,
   },
   { href: "/admin/gallery", label: "Gallery", Icon: Camera },
-  { href: "/admin/videos", label: "Videos", Icon: Clapperboard },
+  { href: "/admin/social", label: "Social media", Icon: Clapperboard },
   { href: "/admin/images", label: "Images", Icon: Images },
   { href: "/admin/settings", label: "Settings", Icon: Settings },
 ] as const;

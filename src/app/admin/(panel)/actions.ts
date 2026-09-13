@@ -14,5 +14,5 @@ export async function signOut(): Promise<void> {
   await supabase.auth.signOut();
   await writeAudit("auth.sign_out", {}, admin.userId);
 
-  redirect("/admin/login");
+  redirect("/admin/login?signed-out=1");
 }

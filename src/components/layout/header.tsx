@@ -112,27 +112,31 @@ export function Header() {
 
         {/* -- Contact affordances ------------------------------------------- */}
         <div className="hidden items-center gap-2 lg:flex">
-          <a
-            href={telHref}
-            className={cn(
-              "inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-colors",
-              transparent
-                ? "text-sand-100 hover:text-white"
-                : "hover:text-magenta-700 text-blue-800",
-            )}
-          >
-            <Phone aria-hidden="true" className="size-4" />
-            {settings.phoneDisplay}
-          </a>
-          <ButtonLink
-            href={whatsapp}
-            variant="whatsapp"
-            size="sm"
-            aria-label="Message Swarangan on WhatsApp"
-          >
-            <WhatsAppIcon className="size-4" />
-            WhatsApp
-          </ButtonLink>
+          {settings.showPhone && (
+            <a
+              href={telHref}
+              className={cn(
+                "inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm whitespace-nowrap transition-colors",
+                transparent
+                  ? "text-sand-100 hover:text-white"
+                  : "hover:text-magenta-700 text-blue-800",
+              )}
+            >
+              <Phone aria-hidden="true" className="size-4" />
+              {settings.phoneDisplay}
+            </a>
+          )}
+          {settings.showWhatsApp && (
+            <ButtonLink
+              href={whatsapp}
+              variant="whatsapp"
+              size="sm"
+              aria-label="Message Swarangan on WhatsApp"
+            >
+              <WhatsAppIcon className="size-4" />
+              WhatsApp
+            </ButtonLink>
+          )}
         </div>
 
         {/* -- Mobile trigger ------------------------------------------------- */}
@@ -192,14 +196,18 @@ export function Header() {
           </ul>
 
           <div className="mt-6 flex flex-col gap-3">
-            <ButtonLink href={whatsapp} variant="whatsapp">
-              <WhatsAppIcon className="size-4" />
-              Message us on WhatsApp
-            </ButtonLink>
-            <ButtonLink href={telHref} variant="secondary">
-              <Phone aria-hidden="true" className="size-4" />
-              {settings.phoneDisplay}
-            </ButtonLink>
+            {settings.showWhatsApp && (
+              <ButtonLink href={whatsapp} variant="whatsapp">
+                <WhatsAppIcon className="size-4" />
+                Message us on WhatsApp
+              </ButtonLink>
+            )}
+            {settings.showPhone && (
+              <ButtonLink href={telHref} variant="secondary">
+                <Phone aria-hidden="true" className="size-4" />
+                {settings.phoneDisplay}
+              </ButtonLink>
+            )}
           </div>
         </nav>
       </div>

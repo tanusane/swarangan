@@ -1,4 +1,3 @@
-import { LogOut } from "lucide-react";
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/ui/brand-logo";
@@ -6,7 +5,7 @@ import { requireAdmin } from "@/lib/auth/dal";
 
 import { AdminNav } from "./admin-nav";
 
-import { signOut } from "./actions";
+import { SignOutButton } from "./sign-out-button";
 
 /**
  * The signed-in admin shell.
@@ -35,15 +34,7 @@ export default async function PanelLayout({
             <span className="text-ink-muted hidden sm:inline">
               {admin.email}
             </span>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="hover:bg-sand-200 inline-flex items-center gap-2 rounded-full px-3 py-2 text-blue-800 transition-colors"
-              >
-                <LogOut aria-hidden="true" className="size-4" />
-                Sign out
-              </button>
-            </form>
+            <SignOutButton />
           </div>
         </div>
         <AdminNav />

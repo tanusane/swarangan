@@ -301,6 +301,19 @@ export function rowsToVideos(
     }));
 }
 
+/** Shown Instagram posts and reels, as embed paths ("reel/CODE"). */
+export function rowsToInstagramPosts(
+  rows: readonly SocialLinkRow[],
+): { key: string; ref: string; title: string }[] {
+  return bySort(rows)
+    .filter((row) => row.platform === "instagram" && row.enabled)
+    .map((row, i) => ({
+      key: row.id ?? `instagram-${i}`,
+      ref: row.embed_ref,
+      title: row.title,
+    }));
+}
+
 export function rowsToFees(rows: readonly FeePlanRow[]): FeePlan[] {
   return bySort(rows)
     .filter((row) => row.published)

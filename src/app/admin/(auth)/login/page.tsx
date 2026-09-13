@@ -9,11 +9,16 @@ import { LoginForm } from "./login-form";
 
 export const metadata: Metadata = { title: "Sign in" };
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   // Already signed in as an admin: go straight to the panel.
   if (await getAdmin()) redirect("/admin");
 
   const configured = isSupabaseConfigured();
+  const signedOut = (await searchParams)["signed-out"] === "1";
 
   return (
     <main className="flex min-h-svh items-center justify-center px-5 py-16">
@@ -29,6 +34,15 @@ export default async function LoginPage() {
           <p className="text-ink-muted mt-1 mb-6 text-sm">
             For Swarangan staff only.
           </p>
+
+          {signedOut && (
+            <p
+              role="status"
+              className="mb-5 rounded-lg bg-green-50 p-3 text-sm text-green-800"
+            >
+              You have been signed out.
+            </p>
+          )}
 
           {configured ? (
             <LoginForm />
