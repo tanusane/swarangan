@@ -4,11 +4,15 @@ import type { Metadata } from "next";
 import { BreadcrumbSchema } from "@/components/seo/structured-data";
 import { YouTubeFacade } from "@/components/social/youtube-facade";
 import { ButtonLink } from "@/components/ui/button";
-import { FacebookIcon, YouTubeIcon } from "@/components/ui/icons";
+import {
+  FacebookIcon,
+  InstagramIcon,
+  YouTubeIcon,
+} from "@/components/ui/icons";
 import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
-import { featuredVideos, INSTAGRAM_ENABLED } from "@/content/social";
+import { featuredVideos } from "@/content/social";
 import { latestChannelUploads } from "@/lib/youtube-feed";
 import { siteConfig } from "@/lib/site-config";
 
@@ -76,6 +80,11 @@ export default async function SocialPage() {
               Visit our YouTube channel
               <ExternalLink aria-hidden="true" className="size-4" />
             </ButtonLink>
+            <ButtonLink href={siteConfig.social.instagram} variant="secondary">
+              <InstagramIcon className="size-5" />
+              Follow on Instagram
+              <ExternalLink aria-hidden="true" className="size-4" />
+            </ButtonLink>
             <ButtonLink href={siteConfig.social.facebook} variant="secondary">
               <FacebookIcon className="size-5" />
               Follow on Facebook
@@ -127,19 +136,38 @@ export default async function SocialPage() {
         </Section>
       )}
 
-      {/* -- Instagram: built, waiting on an account ------------------------- */}
-      {INSTAGRAM_ENABLED && siteConfig.social.instagram && (
-        <Section
-          eyebrow="On Instagram"
-          title="Latest posts"
-          swaraIndex={3}
-          ground="sand"
-        >
-          <p className="text-ink-muted">
-            Instagram posts appear here once curated in the admin panel.
-          </p>
-        </Section>
-      )}
+      {/* -- Instagram --------------------------------------------------------
+          A link to the profile for now. Showing individual posts and reels on
+          this page needs a Meta app access token (Instagram withdrew its public
+          embed API in 2020), so that is planned separately rather than faked. */}
+      <Section
+        eyebrow="On Instagram"
+        title="Reels, rehearsals and moments from class"
+        swaraIndex={3}
+        ground="sand"
+      >
+        <Reveal>
+          <div className="flex flex-col items-start gap-6 md:flex-row md:items-center md:justify-between">
+            <p className="text-ink-muted max-w-xl text-lg">
+              Follow{" "}
+              <a
+                href={siteConfig.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-magenta-700 font-medium underline-offset-4 hover:underline"
+              >
+                @swarangan.sg
+              </a>{" "}
+              for the latest from Swarangan.
+            </p>
+            <ButtonLink href={siteConfig.social.instagram} size="lg">
+              <InstagramIcon className="size-5" />
+              Open Instagram
+              <ExternalLink aria-hidden="true" className="size-4" />
+            </ButtonLink>
+          </div>
+        </Reveal>
+      </Section>
     </>
   );
 }

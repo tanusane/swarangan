@@ -17,7 +17,9 @@ export type AuditAction =
   | "auth.sign_in"
   | "auth.sign_in_failed"
   | "auth.sign_in_blocked"
-  | "auth.sign_out";
+  | "auth.sign_out"
+  | "media.update"
+  | "media.reset";
 
 export async function writeAudit(
   action: AuditAction,

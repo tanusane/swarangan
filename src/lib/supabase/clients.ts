@@ -4,6 +4,7 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
+import { CONTENT_MAX_AGE_SECONDS, CONTENT_TAG } from "@/lib/content/cache";
 import { supabaseEnv } from "@/lib/env";
 
 /**
@@ -50,6 +51,41 @@ export async function sessionClient(): Promise<SupabaseClient> {
       },
     },
   );
+}
+
+let publicReader: SupabaseClient | null = null;
+
+/**
+ * A client for reading PUBLIC content on public pages.
+ *
+ * Uses the publishable key, so row-level security limits it to published rows —
+ * exactly what an anonymous visitor may see. It carries no cookies, which keeps
+ * the pages that use it statically rendered, and every request is cached under
+ * CONTENT_TAG so an admin save refreshes them on demand.
+ */
+export function publicClient(): SupabaseClient {
+  if (publicReader) return publicReader;
+
+  const env = supabaseEnv();
+  publicReader = createClient(
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: {
+        fetch: (input, init) =>
+          fetch(input, {
+            ...init,
+            cache: "force-cache",
+            next: {
+              tags: [CONTENT_TAG],
+              revalidate: CONTENT_MAX_AGE_SECONDS,
+            },
+          }),
+      },
+    },
+  );
+  return publicReader;
 }
 
 let secret: SupabaseClient | null = null;

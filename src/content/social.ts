@@ -62,10 +62,3 @@ export const featuredVideos: readonly (VideoItem & {
     featured: false,
   },
 ];
-
-/**
- * Instagram is not set up yet. The section is built and ready; it renders as
- * soon as `siteConfig.social.instagram` is populated, with curated posts served
- * through Instagram's free public oEmbed — no paid widget service.
- */
-export const INSTAGRAM_ENABLED = false;

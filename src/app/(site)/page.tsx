@@ -7,6 +7,7 @@ import { SectionAside } from "@/components/home/section-aside";
 import { ButtonLink } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { ProseSection, Section, SwarDivider } from "@/components/ui/section";
+import { SlotImage } from "@/components/ui/slot-image";
 import { SwarImage } from "@/components/ui/swar-image";
 import { sectionAsides } from "@/content/asides";
 import {
@@ -102,10 +103,12 @@ export default function HomePage() {
                 aria-hidden="true"
                 className="bg-magenta-600/10 absolute -inset-3 -z-10 rounded-(--radius-card)"
               />
-              <SwarImage
-                image="people/tanuja-sane-guru-paurnima.jpg"
+              {/* Replaceable from Admin -> Images. Falls back to the photo
+                  that ships with the site until one is uploaded. */}
+              <SlotImage
+                slot="home.teacher.portrait"
                 sizes="(min-width: 1024px) 38vw, 90vw"
-                className="rounded-(--radius-card) object-cover shadow-(--shadow-lift-lg)"
+                className="rounded-(--radius-card) shadow-(--shadow-lift-lg)"
               />
             </figure>
           </Reveal>
@@ -150,15 +153,13 @@ export default function HomePage() {
           {siteConfig.affiliations.map((affiliation, i) => (
             <Reveal key={affiliation.name} as="li" delay={i * 0.1}>
               <div className="border-sand-300 bg-sand-100 flex h-full flex-col gap-5 rounded-(--radius-card) border p-7 sm:flex-row sm:items-center">
-                <SwarImage
-                  image={
-                    i === 0
-                      ? "affiliations/bharati-vidyapeeth.jpg"
-                      : "affiliations/suro-bharati.png"
-                  }
-                  sizes="160px"
-                  className="w-40 shrink-0 rounded-md bg-white object-contain p-1"
-                />
+                {affiliation.logo && (
+                  <SwarImage
+                    image={affiliation.logo}
+                    sizes="160px"
+                    className="w-40 shrink-0 rounded-md bg-white object-contain p-1"
+                  />
+                )}
                 <div>
                   <h3 className="text-lg">{affiliation.name}</h3>
                   <p className="text-magenta-700 mt-1 text-xs tracking-wide uppercase">

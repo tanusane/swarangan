@@ -25,8 +25,8 @@ export default function GalleryPage() {
       <PageHeader
         eyebrow="Photographs"
         title="Gallery"
-        lead="Concerts and annual functions — the evenings when a year of riyaz meets an audience."
-        image="events/guru-vandana-1.jpg"
+        lead="Moments from our annual functions — the evenings when a year of riyaz meets an audience."
+        image="events/af2024-ensemble.jpg"
       />
 
       <section className="py-(--spacing-section)">

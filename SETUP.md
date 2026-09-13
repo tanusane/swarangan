@@ -127,6 +127,45 @@ arrived for two days.
 > repository. If the dashboard ever shows the GitHub ping has stopped, re-enable
 > the workflow from the Actions tab. The Vercel ping is unaffected.
 
+## 10. Get found in Singapore — Google and AI assistants
+
+The website already does its part: structured data describing the school, its
+classes, its location in Clementi West and its reviews; a sitemap; a
+`robots.txt` that explicitly welcomes Google, Bing and the AI assistants
+(ChatGPT, Claude, Perplexity, Apple); and `/llms.txt`, a plain summary for AI
+tools.
+
+**No code can guarantee a top search position.** For a local school, what moves
+it most happens off the website:
+
+1. **Google Business Profile — the single biggest factor.** This is what
+   appears in Google Maps and in "music classes near me" results.
+   - Go to [google.com/business](https://www.google.com/business), add
+     Swarangan as a **music school** at the studio address.
+   - Use exactly the same name, address and phone number as the website.
+   - Add photos, the website link, and ask happy parents and students to leave
+     Google reviews. Reviews matter more than almost anything else locally.
+2. **Google Search Console.** At
+   [search.google.com/search-console](https://search.google.com/search-console),
+   add `https://www.swarangan.sg`, verify it (the DNS option is simplest), and
+   submit `https://www.swarangan.sg/sitemap.xml`.
+3. **Bing Webmaster Tools.** At
+   [bing.com/webmasters](https://www.bing.com/webmasters), import the site from
+   Search Console in one click. ChatGPT Search and Microsoft Copilot draw on
+   Bing's index, so this matters for AI answers too.
+4. **Optional — instant updates to Bing.** Set `INDEXNOW_KEY` in Vercel and
+   `.env.local` (a random string, generated like the secrets in step 5), then
+   after publishing changes run:
+
+   ```bash
+   npm run indexnow
+   ```
+
+> Please confirm the studio's postcode. The old site says **128036**;
+> OpenStreetMap lists 52 West Coast Crescent as **126779**. Search engines
+> cross-check the address everywhere it appears, so it must match the Google
+> Business Profile exactly.
+
 ---
 
 ## If something goes wrong

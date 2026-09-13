@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: siteConfig.name, url: siteConfig.url }],
   creator: siteConfig.name,
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", languages: { "en-SG": "/" } },
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
@@ -79,6 +79,14 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
   category: "education",
+  // Regional signals. Google mostly relies on the structured data and the
+  // Business Profile instead, but other engines and AI tools do read these.
+  other: {
+    "geo.region": "SG",
+    "geo.placename": `${siteConfig.address.neighbourhood}, Singapore`,
+    "geo.position": `${siteConfig.address.geo.lat};${siteConfig.address.geo.lng}`,
+    ICBM: `${siteConfig.address.geo.lat}, ${siteConfig.address.geo.lng}`,
+  },
 };
 
 export const viewport: Viewport = {

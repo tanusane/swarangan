@@ -26,6 +26,13 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        // Images uploaded through the admin panel, served from Supabase Storage.
+        // Only the public "media" bucket path is allowed, not the whole host.
+        protocol: "https",
+        hostname: "*.supabase.co",
+        pathname: "/storage/v1/object/public/media/**",
+      },
+      {
         // YouTube video thumbnails for the Social Presence facades. Keyless.
         protocol: "https",
         hostname: "i.ytimg.com",

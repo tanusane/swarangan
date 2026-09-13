@@ -50,14 +50,6 @@ export const imageManifest = {
     blurDataURL:
       "data:image/webp;base64,UklGRjAAAABXRUJQVlA4ICQAAAAwAQCdASoQAAMAA8BgJZwAA3AA/u1mlb6OnfSvxZ1epVgQAAA=",
   },
-  "affiliations/suro-bharati.png": {
-    src: "/images/affiliations/suro-bharati.png",
-    width: 225,
-    height: 225,
-    alt: "Suro Bharati Sangeet Kala Kendra emblem",
-    blurDataURL:
-      "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAABQAgCdASoQABAAA8BgJZgCdAEfcYVFyVq3CAAA/u5bKkP7Iuu3WoZwutaxbHEm1NrZS1jloHHk/S91L8kQpE0GaoAAAA==",
-  },
   "instruments/tanpura-and-tabla.jpg": {
     src: "/images/instruments/tanpura-and-tabla.jpg",
     width: 275,
@@ -65,30 +57,6 @@ export const imageManifest = {
     alt: "A tanpura resting beside a pair of tabla",
     blurDataURL:
       "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADQAQCdASoQAAoAA8BgJaACdAEOT3LAQAD+81Cl9nekaoaJ0kFhqK4WH8J1AVUjxgnCMcN0e9PeHPDwAAA=",
-  },
-  "people/tanuja-sane-guru-paurnima.jpg": {
-    src: "/images/people/tanuja-sane-guru-paurnima.jpg",
-    width: 1067,
-    height: 1600,
-    alt: "Tanuja Sane singing with her tanpura at a Guru Paurnima concert, in a green and gold saree",
-    blurDataURL:
-      "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADQAQCdASoLABAAA8BgJbACdAEUlDEGoAD+W2FeEuZGt9B2vNcd5gbEsv98uobhrtnhzzGGon9gAA==",
-  },
-  "events/guru-vandana-1.jpg": {
-    src: "/images/events/guru-vandana-1.jpg",
-    width: 1600,
-    height: 1067,
-    alt: "Tanuja Sane performing at Guru Vandana, seated with her tanpura and accompanied by tabla and harmonium",
-    blurDataURL:
-      "data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAAAQAgCdASoQAAsAA8BgJbACdH8ADjeWU2yAAPWxIu2hpFs+cQSamiSSgyaa5lG3bDHMiQNrgvoAAA==",
-  },
-  "events/guru-vandana-2.jpg": {
-    src: "/images/events/guru-vandana-2.jpg",
-    width: 1067,
-    height: 1600,
-    alt: "Tanuja Sane mid-phrase at Guru Vandana, hand raised to shape the note",
-    blurDataURL:
-      "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADwAQCdASoLABAAA8BgJbACdADcW4AadCAA/t3nPPXW6nxEqFJ1pzo6g78KIpq0pBySU5YK0d5oyUvAmAAAAA==",
   },
   "events/af2026-thumri-se-ghazal-tak.jpg": {
     src: "/images/events/af2026-thumri-se-ghazal-tak.jpg",

@@ -1,5 +1,10 @@
+import { classOfferings } from "@/content/home";
 import { testimonials } from "@/content/testimonials";
-import { formattedAddress, siteConfig } from "@/lib/site-config";
+import {
+  directionsHref,
+  formattedAddress,
+  siteConfig,
+} from "@/lib/site-config";
 
 /**
  * JSON-LD structured data.
@@ -43,14 +48,45 @@ function graph() {
           latitude: siteConfig.address.geo.lat,
           longitude: siteConfig.address.geo.lng,
         },
-        areaServed: { "@type": "Country", name: "Singapore" },
+        // Studio classes in the West, home classes island-wide, online anywhere.
+        areaServed: [
+          { "@type": "Country", name: "Singapore" },
+          {
+            "@type": "Place",
+            name: `${siteConfig.address.neighbourhood}, Singapore`,
+          },
+        ],
+        hasMap: directionsHref(),
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: siteConfig.contact.phoneE164,
+          email: siteConfig.contact.email,
+          contactType: "admissions",
+          areaServed: "SG",
+        },
+        // The class catalogue, so search engines and AI assistants can answer
+        // "does Swarangan teach adults?" from structured facts, not guesswork.
+        hasOfferCatalog: {
+          "@type": "OfferCatalog",
+          name: "Hindustani vocal music classes",
+          itemListElement: classOfferings.map((offering) => ({
+            "@type": "Offer",
+            itemOffered: {
+              "@type": "Course",
+              name: offering.title,
+              description: offering.description,
+              provider: { "@id": SCHOOL_ID },
+              inLanguage: "en",
+            },
+          })),
+        },
         founder: { "@id": PERSON_ID },
         employee: { "@id": PERSON_ID },
         sameAs: [
-          siteConfig.social.facebook,
-          siteConfig.social.youtube,
           siteConfig.social.instagram,
-        ].filter((value): value is string => typeof value === "string"),
+          siteConfig.social.youtube,
+          siteConfig.social.facebook,
+        ],
         knowsAbout: [
           "Hindustani classical music",
           "Khayal",
@@ -73,7 +109,7 @@ function graph() {
         jobTitle: "Hindustani vocal music teacher",
         description:
           "Founder of Swarangan, Singapore. Master of Arts in Hindustani Vocal Music from Bharati Vidyapeeth, Pune, with more than 20 years of teaching experience.",
-        image: `${siteConfig.url}/images/people/tanuja-sane-guru-paurnima.jpg`,
+        image: `${siteConfig.url}/images/people/tanuja-sane-tanpura.jpg`,
         worksFor: { "@id": SCHOOL_ID },
         alumniOf: siteConfig.affiliations.map((item) => ({
           "@type": "Organization",

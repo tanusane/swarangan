@@ -7,6 +7,7 @@ import { BreadcrumbSchema } from "@/components/seo/structured-data";
 import { ButtonLink } from "@/components/ui/button";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { PageHeader } from "@/components/ui/page-header";
+import { SocialLinks } from "@/components/ui/social-links";
 import { Reveal } from "@/components/ui/reveal";
 import {
   mailtoHref,
@@ -132,6 +133,13 @@ export default function ContactPage() {
                       </div>
                     </li>
                   </ul>
+
+                  <div className="border-sand-300 mt-7 border-t pt-6">
+                    <p className="mb-3 text-sm font-medium text-blue-800">
+                      Follow us
+                    </p>
+                    <SocialLinks />
+                  </div>
                 </div>
               </Reveal>
 

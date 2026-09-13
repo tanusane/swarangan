@@ -16,7 +16,8 @@
     "palette": "node scripts/build-palette.mjs",
     "duplication": "jscpd src --min-lines 12 --threshold 3 --reporters consoleFull",
     "verify": "npm run typecheck && npm run lint && npm run test",
-    "verify:rls": "node scripts/verify-rls.mjs"
+    "verify:rls": "node scripts/verify-rls.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

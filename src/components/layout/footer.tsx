@@ -2,7 +2,8 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/ui/brand-logo";
-import { FacebookIcon, WhatsAppIcon, YouTubeIcon } from "@/components/ui/icons";
+import { WhatsAppIcon } from "@/components/ui/icons";
+import { SocialLinks } from "@/components/ui/social-links";
 import {
   formattedAddress,
   mailtoHref,
@@ -11,11 +12,6 @@ import {
   telHref,
   whatsappHref,
 } from "@/lib/site-config";
-
-const SOCIALS = [
-  { href: siteConfig.social.facebook, label: "Facebook", Icon: FacebookIcon },
-  { href: siteConfig.social.youtube, label: "YouTube", Icon: YouTubeIcon },
-] as const;
 
 export function Footer() {
   return (
@@ -28,29 +24,7 @@ export function Footer() {
             <p className="text-sand-300 max-w-xs text-sm">
               {siteConfig.description}
             </p>
-            <div className="mt-6 flex gap-2">
-              {SOCIALS.map(({ href, label, Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${siteConfig.name} on ${label}`}
-                  className="border-sand-200/20 text-sand-200 hover:border-gold-300 hover:text-gold-300 inline-flex size-10 items-center justify-center rounded-full border transition-colors"
-                >
-                  <Icon aria-hidden="true" className="size-5" />
-                </a>
-              ))}
-              <a
-                href={whatsappHref()}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Message Swarangan on WhatsApp"
-                className="border-sand-200/20 text-sand-200 inline-flex size-10 items-center justify-center rounded-full border transition-colors hover:border-[#25D366] hover:text-[#25D366]"
-              >
-                <WhatsAppIcon className="size-5" />
-              </a>
-            </div>
+            <SocialLinks tone="dark" className="mt-6" />
           </div>
 
           {/* -- Navigation -------------------------------------------------- */}

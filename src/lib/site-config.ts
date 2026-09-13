@@ -1,3 +1,4 @@
+import type { ImageKey } from "@/content/generated/image-manifest";
 import { digitsOnly } from "@/lib/utils";
 
 /**
@@ -45,8 +46,18 @@ export const siteConfig = {
     locality: "Singapore",
     postalCode: "128036",
     country: "SG",
-    /** West Coast Crescent, Singapore. Used for the static map embed. */
-    geo: { lat: 1.2938, lng: 103.7616 },
+    /**
+     * Neighbourhood, as locals search for it. Verified against OpenStreetMap,
+     * which places 52 West Coast Crescent in Clementi West.
+     */
+    neighbourhood: "Clementi West",
+    region: "West Region",
+    /**
+     * Verified 13 Sep 2026 against OpenStreetMap for 52 West Coast Crescent.
+     * (An earlier estimate was ~700 m out.) Used in structured data, where a
+     * wrong pin actively hurts local search.
+     */
+    geo: { lat: 1.298694, lng: 103.766358 },
   },
 
   /** ACRA business registration, shown in the footer as on the legacy site. */
@@ -57,21 +68,21 @@ export const siteConfig = {
     youtube: "https://www.youtube.com/channel/UCRUFat39YgpIP3JmSa0dlQA",
     /** Channel id, for the keyless public RSS feed of latest uploads. */
     youtubeChannelId: "UCRUFat39YgpIP3JmSa0dlQA",
-    /** Not yet created. The Instagram section stays hidden while this is null. */
-    instagram: null as string | null,
+    instagram: "https://www.instagram.com/swarangan.sg/",
   },
 
   affiliations: [
     {
       name: "Bharati Vidyapeeth School of Performing Arts",
       place: "Pune, India",
-      logo: "/images/affiliations/bharati-vidyapeeth.jpg",
+      logo: "affiliations/bharati-vidyapeeth.jpg" as ImageKey | null,
       note: "Diploma certifications in vocal, instrumental and Indian dance forms.",
     },
     {
       name: "Suro Bharati Sangeet Kala Kendra",
       place: "West Bengal, India",
-      logo: "/images/affiliations/suro-bharati.png",
+      // Logo removed at Amit's request (13 Sep 2026); the affiliation stays.
+      logo: null as ImageKey | null,
       note: "Vocal diploma certifications.",
     },
   ],

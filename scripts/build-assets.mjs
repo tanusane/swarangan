@@ -72,34 +72,10 @@ const ASSETS = [
     maxEdge: 1022,
   },
   {
-    source: "assets-source/legacy/home-3.png",
-    out: "affiliations/suro-bharati.png",
-    alt: "Suro Bharati Sangeet Kala Kendra emblem",
-    maxEdge: 450,
-    dropBackground: true,
-  },
-  {
     source: "assets-source/legacy/home-1.jpg",
     out: "instruments/tanpura-and-tabla.jpg",
     alt: "A tanpura resting beside a pair of tabla",
     maxEdge: 550,
-  },
-
-  // -- Concert photographs supplied by Amit ----------------------------------
-  {
-    source: "important-photos/guru-purnima.jpeg",
-    out: "people/tanuja-sane-guru-paurnima.jpg",
-    alt: "Tanuja Sane singing with her tanpura at a Guru Paurnima concert, in a green and gold saree",
-  },
-  {
-    source: "important-photos/guru-vandana.jpeg",
-    out: "events/guru-vandana-1.jpg",
-    alt: "Tanuja Sane performing at Guru Vandana, seated with her tanpura and accompanied by tabla and harmonium",
-  },
-  {
-    source: "important-photos/guru-vandana-2.jpeg",
-    out: "events/guru-vandana-2.jpg",
-    alt: "Tanuja Sane mid-phrase at Guru Vandana, hand raised to shape the note",
   },
 
   // -- Annual function 2026: "Thumri Se Ghazal Tak" --------------------------

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { requireAdmin } from "@/lib/auth/dal";
 
+import { AdminNav } from "./admin-nav";
+
 import { signOut } from "./actions";
 
 /**
@@ -44,6 +46,7 @@ export default async function PanelLayout({
             </form>
           </div>
         </div>
+        <AdminNav />
       </header>
 
       <main className="container-swar py-10">{children}</main>
