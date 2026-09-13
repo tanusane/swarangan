@@ -1,6 +1,15 @@
 "use client";
 
-import { Images, LayoutDashboard } from "lucide-react";
+import {
+  BookOpen,
+  Camera,
+  FileText,
+  Images,
+  LayoutDashboard,
+  MessageSquareQuote,
+  Settings,
+  Clapperboard,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -13,7 +22,17 @@ import { cn } from "@/lib/utils";
  */
 const SECTIONS = [
   { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
+  { href: "/admin/pages", label: "Page text", Icon: FileText },
+  { href: "/admin/classes", label: "Classes & fees", Icon: BookOpen },
+  {
+    href: "/admin/testimonials",
+    label: "Testimonials",
+    Icon: MessageSquareQuote,
+  },
+  { href: "/admin/gallery", label: "Gallery", Icon: Camera },
+  { href: "/admin/videos", label: "Videos", Icon: Clapperboard },
   { href: "/admin/images", label: "Images", Icon: Images },
+  { href: "/admin/settings", label: "Settings", Icon: Settings },
 ] as const;
 
 export function AdminNav() {

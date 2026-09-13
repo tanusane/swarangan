@@ -7,8 +7,11 @@ import {
 import type { Metadata } from "next";
 
 import { loadDashboard } from "@/lib/admin/dashboard";
+import { loadAdminSettings } from "@/lib/cms/admin-read";
 import { describeAge } from "@/lib/heartbeat";
 import { cn } from "@/lib/utils";
+
+import { ImportCard } from "./content/import-card";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
@@ -20,17 +23,20 @@ export const metadata: Metadata = { title: "Dashboard" };
  * Data loading, including the admin check, lives in lib/admin/dashboard.ts.
  */
 export default async function AdminDashboard() {
-  const { health, heartbeatSource, recentFailures } = await loadDashboard();
+  const [{ health, heartbeatSource, recentFailures }, { imported }] =
+    await Promise.all([loadDashboard(), loadAdminSettings()]);
 
   return (
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl">Dashboard</h1>
         <p className="text-ink-muted mt-1">
-          Content editors, the student roster and backups arrive in the next
-          steps.
+          Edit the website from the tabs above. The student roster and backups
+          arrive in the next steps.
         </p>
       </div>
+
+      {!imported && <ImportCard />}
 
       <div className="grid gap-5 md:grid-cols-2">
         {/* -- Keepalive ---------------------------------------------------- */}

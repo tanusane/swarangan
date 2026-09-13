@@ -7,42 +7,18 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";
 import {
-  STORAGE_BUCKET,
-  fitWithin,
   slotStoragePath,
   type ResolvedSlot,
   type SlotKey,
 } from "@/lib/media/slots";
-import { browserClient } from "@/lib/supabase/browser";
+import {
+  ACCEPTED_IMAGE_TYPES,
+  prepareImage,
+  rejectReason,
+  uploadToMedia,
+} from "@/lib/media/upload-client";
 
 import { resetSlot, saveSlot } from "./actions";
-
-const ACCEPTED = ["image/jpeg", "image/png", "image/webp"];
-/** Checked before resizing, just to refuse something absurd early. */
-const MAX_SOURCE_BYTES = 25 * 1024 * 1024;
-
-/** Downscale in the browser and re-encode as JPEG. */
-async function prepareImage(file: File): Promise<Blob> {
-  const bitmap = await createImageBitmap(file);
-  const { width, height } = fitWithin(bitmap.width, bitmap.height);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const context = canvas.getContext("2d");
-  if (!context) throw new Error("Your browser could not process this image.");
-  context.drawImage(bitmap, 0, 0, width, height);
-  bitmap.close();
-
-  return new Promise((resolve, reject) =>
-    canvas.toBlob(
-      (blob) =>
-        blob ? resolve(blob) : reject(new Error("Could not encode the image.")),
-      "image/jpeg",
-      0.86,
-    ),
-  );
-}
 
 interface SlotEditorProps {
   slotKey: SlotKey;
@@ -95,12 +71,9 @@ export function SlotEditor({
     const chosen = event.target.files?.[0];
     if (!chosen) return;
 
-    if (!ACCEPTED.includes(chosen.type)) {
-      setError("Please choose a JPEG, PNG or WebP photo.");
-      return;
-    }
-    if (chosen.size > MAX_SOURCE_BYTES) {
-      setError("That file is too large. Please choose a photo under 25 MB.");
+    const reason = rejectReason(chosen);
+    if (reason) {
+      setError(reason);
       return;
     }
 
@@ -128,18 +101,11 @@ export function SlotEditor({
 
         if (file) {
           setStatus("Resizing…");
-          const blob = await prepareImage(file);
+          const { blob } = await prepareImage(file);
 
           setStatus("Uploading…");
           storagePath = slotStoragePath(slotKey, new Date());
-          const { error: uploadError } = await browserClient()
-            .storage.from(STORAGE_BUCKET)
-            .upload(storagePath, blob, {
-              contentType: "image/jpeg",
-              cacheControl: "31536000",
-              upsert: false,
-            });
-          if (uploadError) throw new Error(uploadError.message);
+          await uploadToMedia(storagePath, blob);
         }
 
         if (!storagePath) {
@@ -240,7 +206,7 @@ export function SlotEditor({
             <input
               ref={inputRef}
               type="file"
-              accept={ACCEPTED.join(",")}
+              accept={ACCEPTED_IMAGE_TYPES.join(",")}
               onChange={choose}
               className="sr-only"
               id={`upload-${slotKey}`}

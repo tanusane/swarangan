@@ -19,7 +19,15 @@ export type AuditAction =
   | "auth.sign_in_blocked"
   | "auth.sign_out"
   | "media.update"
-  | "media.reset";
+  | "media.reset"
+  | "content.import"
+  | "content.create"
+  | "content.update"
+  | "content.delete"
+  | "content.reorder"
+  | "content.visibility"
+  | "gallery.upload"
+  | "settings.update";
 
 export async function writeAudit(
   action: AuditAction,
