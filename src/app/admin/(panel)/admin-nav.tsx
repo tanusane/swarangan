@@ -2,6 +2,9 @@
 
 import {
   BookOpen,
+  DatabaseBackup,
+  Inbox,
+  Users,
   Camera,
   FileText,
   Images,
@@ -22,6 +25,8 @@ import { cn } from "@/lib/utils";
  */
 const SECTIONS = [
   { href: "/admin", label: "Dashboard", Icon: LayoutDashboard },
+  { href: "/admin/students", label: "Students", Icon: Users },
+  { href: "/admin/enquiries", label: "Enquiries", Icon: Inbox },
   { href: "/admin/pages", label: "Page text", Icon: FileText },
   { href: "/admin/classes", label: "Classes & fees", Icon: BookOpen },
   {
@@ -33,6 +38,7 @@ const SECTIONS = [
   { href: "/admin/social", label: "Social media", Icon: Clapperboard },
   { href: "/admin/images", label: "Images", Icon: Images },
   { href: "/admin/settings", label: "Settings", Icon: Settings },
+  { href: "/admin/backup", label: "Backup", Icon: DatabaseBackup },
 ] as const;
 
 export function AdminNav() {

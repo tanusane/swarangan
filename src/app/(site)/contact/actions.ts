@@ -1,30 +1,45 @@
 "use server";
 
+import { after } from "next/server";
+
+import { getSettings } from "@/lib/cms/repository";
+import {
+  acknowledgementEmail,
+  notificationEmail,
+} from "@/lib/enquiries/emails";
+import { sendEmail } from "@/lib/enquiries/send";
 import {
   enquirySchema,
   type EnquiryInput,
   type EnquiryResult,
 } from "@/lib/enquiry-schema";
+import { isSupabaseConfigured } from "@/lib/env";
+import { siteConfig } from "@/lib/site-config";
+import { secretClient } from "@/lib/supabase/clients";
 
 /**
  * Enquiry submission.
  *
- * PHASE 1: validates on the server using the same schema as the client and
- * returns. It does not yet persist or email anything, and it says so honestly in
- * the log rather than pretending to have delivered a message.
+ *   1. Re-validate. A Server Action is a public HTTP endpoint — the client-side
+ *      check is a convenience for the visitor, never a security boundary.
+ *   2. Drop bots (honeypot) and floods (a per-address hourly limit).
+ *   3. SAVE the enquiry. This is the durable record: it shows up in the admin
+ *      inbox even if every email below fails.
+ *   4. After responding, email Swarangan and acknowledge the visitor, and record
+ *      whether the notification went out, so a failed send is visible in the
+ *      inbox rather than silently lost.
  *
- * PHASE 2 replaces the marked section with:
- *   1. insert into the Supabase `enquiries` table (the durable record — so an
- *      enquiry survives an email failure and shows up in the admin inbox), then
- *   2. a Resend call notifying info@swarangan.sg, plus an acknowledgement to the
- *      visitor.
- * The insert comes first deliberately: losing an enquiry is unacceptable,
- * failing to send a notification is merely bad.
- *
- * Note the client-supplied values are re-validated here. A Server Action is a
- * public HTTP endpoint — the client-side check is a convenience for the visitor,
- * never a security boundary.
+ * The insert uses the secret key because enquiries deliberately have no public
+ * insert policy — a bot holding the publishable key cannot write to the table
+ * and skip everything above.
  */
+
+/** Enquiries accepted from one email address per hour. */
+const HOURLY_LIMIT_PER_EMAIL = 3;
+
+const FALLBACK =
+  "Something went wrong sending your message. Please try WhatsApp or email us directly at info@swarangan.sg.";
+
 export async function submitEnquiry(
   input: EnquiryInput,
 ): Promise<EnquiryResult> {
@@ -45,26 +60,74 @@ export async function submitEnquiry(
     };
   }
 
-  // Honeypot filled means a bot. Return success so it learns nothing, and drop
-  // the submission.
-  if (parsed.data.botField) {
-    return { status: "success" };
+  // Honeypot filled means a bot. Return success so it learns nothing.
+  if (parsed.data.botField) return { status: "success" };
+
+  if (!isSupabaseConfigured()) {
+    console.error("[enquiry] Supabase is not configured; enquiry not saved");
+    return { status: "error", message: FALLBACK };
   }
 
+  const data = parsed.data;
+  const email = data.email.toLowerCase();
+  const db = secretClient();
+
   try {
-    // ---- PHASE 2: Supabase insert + Resend notification go here -----------
-    console.info(
-      "[enquiry] validated (Phase 1: not yet persisted or emailed)",
-      { name: parsed.data.name, email: parsed.data.email },
-    );
+    const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count, error: countError } = await db
+      .from("enquiries")
+      .select("id", { count: "exact", head: true })
+      .eq("email", email)
+      .gte("created_at", since);
+    if (countError) throw countError;
+
+    if ((count ?? 0) >= HOURLY_LIMIT_PER_EMAIL) {
+      return {
+        status: "error",
+        message:
+          "We have already received your recent messages and will reply soon. For anything urgent, please use WhatsApp.",
+      };
+    }
+
+    const record = {
+      name: data.name,
+      email,
+      phone: data.phone || null,
+      interest: data.interest || null,
+      mode: data.mode || null,
+      message: data.message,
+    };
+
+    const { data: saved, error } = await db
+      .from("enquiries")
+      .insert(record)
+      .select("id")
+      .single();
+    if (error) throw error;
+
+    after(async () => {
+      const settings = await getSettings();
+      const notified = await sendEmail({
+        to: settings.email,
+        replyTo: email,
+        ...notificationEmail(record, `${siteConfig.url}/admin/enquiries`),
+      });
+      if (notified) {
+        await db
+          .from("enquiries")
+          .update({ email_sent: true })
+          .eq("id", saved.id);
+      }
+      await sendEmail({
+        to: email,
+        replyTo: settings.email,
+        ...acknowledgementEmail(record),
+      });
+    });
 
     return { status: "success" };
   } catch (error) {
     console.error("[enquiry] failed", error);
-    return {
-      status: "error",
-      message:
-        "Something went wrong sending your message. Please try WhatsApp or email us directly at info@swarangan.sg.",
-    };
+    return { status: "error", message: FALLBACK };
   }
 }

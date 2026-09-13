@@ -27,7 +27,14 @@ export type AuditAction =
   | "content.reorder"
   | "content.visibility"
   | "gallery.upload"
-  | "settings.update";
+  | "settings.update"
+  | "enquiry.status"
+  | "enquiry.delete"
+  | "student.create"
+  | "student.update"
+  | "student.delete"
+  | "backup.download"
+  | "backup.denied";
 
 export async function writeAudit(
   action: AuditAction,

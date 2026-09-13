@@ -8,7 +8,6 @@ import {
   Loader2,
   Pencil,
   Plus,
-  Save,
   Trash2,
   X,
 } from "lucide-react";
@@ -16,7 +15,13 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Field, TextArea, TextInput, Toggle } from "@/components/ui/field";
+import {
+  Field,
+  FormFooter,
+  TextArea,
+  TextInput,
+  Toggle,
+} from "@/components/ui/field";
 import {
   COLLECTIONS,
   type CollectionKey,
@@ -339,31 +344,7 @@ function ItemForm({ collectionKey, id, initial, onDone }: ItemFormProps) {
         />
       ))}
 
-      {error && (
-        <p role="alert" className="text-magenta-800 text-sm">
-          {error}
-        </p>
-      )}
-
-      <div className="flex gap-2">
-        <Button type="submit" size="sm" disabled={busy}>
-          {busy ? (
-            <Loader2 aria-hidden="true" className="size-4 animate-spin" />
-          ) : (
-            <Save aria-hidden="true" className="size-4" />
-          )}
-          Save
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={onDone}
-          disabled={busy}
-        >
-          Cancel
-        </Button>
-      </div>
+      <FormFooter busy={busy} error={error} onCancel={onDone} />
     </form>
   );
 }

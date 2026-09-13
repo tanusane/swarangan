@@ -12,18 +12,19 @@ import { describeAge } from "@/lib/heartbeat";
 import { cn } from "@/lib/utils";
 
 import { ImportCard } from "./content/import-card";
+import { DashboardCharts } from "./dashboard-charts";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
 /**
  * Admin home.
  *
- * For now: the two things that matter before the editors arrive — whether the
+ * Students and enquiries first, then the two health checks: whether the
  * keepalive is working, and whether anyone is trying to break into the login.
  * Data loading, including the admin check, lives in lib/admin/dashboard.ts.
  */
 export default async function AdminDashboard() {
-  const [{ health, heartbeatSource, recentFailures }, { imported }] =
+  const [{ health, heartbeatSource, recentFailures, stats }, { imported }] =
     await Promise.all([loadDashboard(), loadAdminSettings()]);
 
   return (
@@ -31,12 +32,14 @@ export default async function AdminDashboard() {
       <div>
         <h1 className="text-3xl">Dashboard</h1>
         <p className="text-ink-muted mt-1">
-          Edit the website from the tabs above. The student roster and backups
-          arrive in the next steps.
+          Students and enquiries at a glance. Edit the website from the tabs
+          above.
         </p>
       </div>
 
       {!imported && <ImportCard />}
+
+      <DashboardCharts stats={stats} />
 
       <div className="grid gap-5 md:grid-cols-2">
         {/* -- Keepalive ---------------------------------------------------- */}

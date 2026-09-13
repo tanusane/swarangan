@@ -165,6 +165,41 @@ it most happens off the website:
 > #07-09 West Bay Condominium, Singapore 128036** — including on the Google
 > Business Profile. Search engines cross-check it everywhere it appears.
 
+## 11. Enquiry emails (optional, free)
+
+Enquiries from the contact form are **always saved** and appear under
+**Admin → Enquiries**, with or without this step. This step adds an email to
+info@swarangan.sg for each one, and a short "thank you" to the visitor.
+
+1. Create a free account at [resend.com](https://resend.com) (3,000 emails a
+   month, no card).
+2. **Domains → Add domain** → `swarangan.sg`. Resend shows a few DNS records;
+   add them where the domain is managed, then click **Verify**.
+3. **API Keys → Create API key** (permission: *Sending access*).
+4. Add both to `.env.local` and to Vercel's environment variables:
+   ```
+   RESEND_API_KEY=re_...
+   RESEND_FROM="Swarangan <enquiries@swarangan.sg>"
+   ```
+5. Send yourself a test through the contact form. In the inbox, an enquiry
+   whose email did not go out is marked "No email notification was sent".
+
+## 12. Backups
+
+**Download:** Admin → **Backup**, confirm your password, and a ZIP downloads.
+Do this monthly and keep the file somewhere private — it contains students' and
+parents' contact details. Every download is recorded in the activity log.
+
+**Restoring a backup** (into this project, or a fresh one after running step 2):
+
+```bash
+npm run restore -- path/to/swarangan-backup-2026-09-13-1405.zip
+```
+
+That is a dry run showing what would change. Add `--confirm` to write. It is
+safe to repeat. Photos are not in the ZIP (they stay in Supabase Storage), the
+activity log is not written back, and admins are re-added as in step 4.
+
 ---
 
 ## If something goes wrong

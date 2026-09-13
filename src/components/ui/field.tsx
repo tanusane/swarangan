@@ -1,6 +1,9 @@
 "use client";
 
+import { Loader2, Save } from "lucide-react";
 import { useId, type ReactNode } from "react";
+
+import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 
@@ -154,5 +157,50 @@ export function Toggle({
         {hint && <span className="text-ink-muted block text-xs">{hint}</span>}
       </span>
     </label>
+  );
+}
+
+/**
+ * The end of every admin form: an error, if any, then Save (spinning while it
+ * works) and Cancel.
+ */
+export function FormFooter({
+  busy,
+  error,
+  onCancel,
+  className,
+}: {
+  busy: boolean;
+  error: string | null;
+  onCancel: () => void;
+  className?: string;
+}) {
+  return (
+    <div className={cn("space-y-3", className)}>
+      {error && (
+        <p role="alert" className="text-magenta-800 text-sm">
+          {error}
+        </p>
+      )}
+      <div className="flex gap-2">
+        <Button type="submit" size="sm" disabled={busy}>
+          {busy ? (
+            <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+          ) : (
+            <Save aria-hidden="true" className="size-4" />
+          )}
+          {busy ? "Saving…" : "Save"}
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onCancel}
+          disabled={busy}
+        >
+          Cancel
+        </Button>
+      </div>
+    </div>
   );
 }

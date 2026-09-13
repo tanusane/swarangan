@@ -247,7 +247,7 @@
     <main>
       <div class="progress">
         <div class="bar"><span id="bar"></span></div>
-        <small id="count">0 of 10 steps done</small>
+        <small id="count">0 of 12 steps done</small>
       </div>
 
       <div class="note">
@@ -535,6 +535,49 @@
             128036</strong
           >.
         </div>
+        <label class="check"><input type="checkbox" /> Done</label>
+      </section>
+
+      <section class="step" data-step="11">
+        <div class="step-head">
+          <span class="num">11</span>
+          <h2>Enquiry emails (optional)</h2>
+        </div>
+        <p>
+          Enquiries are always saved in <strong>Admin → Enquiries</strong>. This
+          step also emails each one to info@swarangan.sg.
+        </p>
+        <ol>
+          <li>
+            Create a free account at
+            <a href="https://resend.com" target="_blank" rel="noopener"
+              >resend.com</a
+            >.
+          </li>
+          <li>
+            <strong>Domains → Add domain</strong> → <code>swarangan.sg</code>,
+            add the DNS records it shows, then <strong>Verify</strong>.
+          </li>
+          <li><strong>API Keys → Create API key</strong> (Sending access).</li>
+          <li>
+            Add <code>RESEND_API_KEY</code> and
+            <code>RESEND_FROM="Swarangan &lt;enquiries@swarangan.sg&gt;"</code>
+            to <code>.env.local</code> and to Vercel.
+          </li>
+        </ol>
+        <label class="check"><input type="checkbox" /> Done</label>
+      </section>
+
+      <section class="step" data-step="12">
+        <div class="step-head">
+          <span class="num">12</span>
+          <h2>Take a first backup</h2>
+        </div>
+        <p>
+          In the admin, open <strong>Backup</strong>, confirm your password and
+          download the ZIP. Keep it private — it has students' contact details.
+          Repeat monthly.
+        </p>
         <label class="check"><input type="checkbox" /> Done</label>
       </section>
 

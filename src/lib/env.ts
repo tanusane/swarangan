@@ -56,3 +56,22 @@ export function isSupabaseConfigured(): boolean {
 export function cronSecret(): string {
   return read(cronSchema, "Keepalive cron").CRON_SECRET;
 }
+
+const emailSchema = z.object({
+  RESEND_API_KEY: z.string().startsWith("re_"),
+  // A sender on a domain verified in Resend, e.g.
+  // "Swarangan <enquiries@swarangan.sg>".
+  RESEND_FROM: z.string().min(3),
+});
+
+export type EmailEnv = z.infer<typeof emailSchema>;
+
+/**
+ * Email is OPTIONAL: without it, enquiries are still saved and appear in the
+ * admin inbox; only the notification emails are skipped. Returns null rather
+ * than throwing, so a missing key can never lose an enquiry.
+ */
+export function emailEnv(): EmailEnv | null {
+  const parsed = emailSchema.safeParse(process.env);
+  return parsed.success ? parsed.data : null;
+}
