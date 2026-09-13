@@ -1,5 +1,5 @@
 /**
- * Content shapes shared by the Phase 1 seed and the Phase 2 Supabase reads.
+ * Content shapes shared by the shipped content and the Supabase reads.
  *
  * Components are typed against these, never against a Supabase row, which is
  * what lets the data source change without touching a single component.

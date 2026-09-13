@@ -6,6 +6,8 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Field, TextInput } from "@/components/ui/field";
 
+import { EmailField } from "../auth-card";
+
 import { signIn, type SignInState } from "./actions";
 
 const initialState: SignInState = { error: null };
@@ -15,18 +17,7 @@ export function LoginForm() {
 
   return (
     <form action={action} className="space-y-5">
-      <Field label="Email" required>
-        {(props) => (
-          <TextInput
-            {...props}
-            name="email"
-            type="email"
-            autoComplete="username"
-            inputMode="email"
-            required
-          />
-        )}
-      </Field>
+      <EmailField />
 
       <Field label="Password" required>
         {(props) => (

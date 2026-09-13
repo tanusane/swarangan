@@ -18,7 +18,8 @@
     "verify": "npm run typecheck && npm run lint && npm run test",
     "verify:rls": "node scripts/verify-rls.mjs",
     "indexnow": "node scripts/indexnow.mjs",
-    "restore": "node scripts/restore-backup.mjs"
+    "restore": "node scripts/restore-backup.mjs",
+    "test:email": "node scripts/test-email.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

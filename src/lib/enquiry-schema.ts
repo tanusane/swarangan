@@ -4,8 +4,8 @@ import { z } from "zod";
  * The enquiry form contract.
  *
  * ONE schema, shared by the client form and the server action, so client-side
- * and server-side validation can never drift apart. Phase 2 reuses it again as
- * the shape written to the Supabase `enquiries` table.
+ * and server-side validation can never drift apart. It is also the shape
+ * written to the Supabase `enquiries` table.
  */
 
 export const CLASS_INTERESTS = [

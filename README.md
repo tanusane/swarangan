@@ -4,14 +4,14 @@ The website for **Swarangan**, Mrs. Tanuja Sane's Hindustani classical vocal
 music school in Singapore — rebuilt from the original
 [swarangan.sg](https://www.swarangan.sg) so it can be hosted for free.
 
-|                 |                                                          |
-| --------------- | -------------------------------------------------------- |
-| Framework       | Next.js 16 (App Router) · React 19 · TypeScript (strict) |
-| Styling         | Tailwind CSS v4                                          |
-| Motion          | `motion` (motion.dev) · `anime.js` v4                    |
-| Hosting         | Vercel — free Hobby tier                                 |
-| Data (Phase 2)  | Supabase — free tier                                     |
-| Email (Phase 2) | Resend — free tier                                       |
+|           |                                                          |
+| --------- | -------------------------------------------------------- |
+| Framework | Next.js 16 (App Router) · React 19 · TypeScript (strict) |
+| Styling   | Tailwind CSS v4                                          |
+| Motion    | `motion` (motion.dev) · `anime.js` v4                    |
+| Hosting   | Vercel — free Hobby tier                                 |
+| Data      | Supabase — free tier (Postgres, auth, storage)           |
+| Email     | Resend — free tier                                       |
 
 Running cost after migration is **S$0** for hosting, database and email. Only the
 `swarangan.sg` domain renewal remains.
@@ -25,8 +25,10 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. **No environment variables are needed** — Phase 1
-runs entirely on committed content and assets.
+Open http://localhost:3000. **No environment variables are needed** for the
+public site: it runs on committed content and assets. The admin panel needs
+Supabase — follow [SETUP.md](SETUP.md). How to use the admin is in
+[ADMIN_GUIDE.md](ADMIN_GUIDE.md).
 
 ### Scripts
 
@@ -41,6 +43,10 @@ runs entirely on committed content and assets.
 | `npm run palette`     | Regenerate the colour ramps and re-check WCAG contrast |
 | `npm run duplication` | jscpd copy-paste check                                 |
 | `npm run format`      | Prettier                                               |
+| `npm run verify:rls`  | Attack the live database with the public key           |
+| `npm run restore`     | Restore a backup ZIP (dry run unless `--confirm`)      |
+| `npm run test:email`  | Send a test email with the enquiry email settings      |
+| `npm run indexnow`    | Tell Bing and others the site changed                  |
 
 ---
 
@@ -71,9 +77,10 @@ that owns page rhythm; one `<SwarImage>`. If something appears twice, it gets
 extracted — `npm run duplication` helps catch what slips through.
 
 **Content is separated from presentation.** Every string lives in
-`src/content/`. Phase 2 swaps that folder's data source for Supabase reads
-without touching a single component, which is what makes the admin panel a
-contained piece of work rather than a rewrite.
+`src/content/`, which is also the seed for the database. Pages read through
+`src/lib/cms/repository.ts`: before the one-click import they show the shipped
+content, afterwards the database, and on any database error they fall back to
+the shipped content, so the public site never breaks.
 
 **The copy is not ours to change.** The text was transcribed verbatim from the
 legacy site, original spellings included. `src/content/content-fidelity.test.ts`
@@ -131,17 +138,14 @@ URL.** The DNS cutover is the last step, and it is the only irreversible one.
 
 ## Status
 
-**Phase 1 — public site: complete.**
+Complete: the public site; the admin panel (every page's text, testimonials,
+classes and fees, gallery photos with captions, YouTube videos, Instagram posts,
+images, contact details and visibility switches); the student roster, enquiries
+inbox and dashboard charts; password reset; database backup and restore; the
+keepalive; security headers and a Content-Security-Policy.
 
-**Phase 2 — in progress.** The security core is built: the full database schema
-with row-level security on every table, the hardened admin sign-in, the admin
-shell, and the two-cron keepalive. Setting it up is in [SETUP.md](SETUP.md).
-Next: the content editors, so the site's copy, photos and videos become
-editable.
-
-Still to come: **Phase 3** the student roster, dashboard and database backup;
-**Phase 4** the Swarangan.AI assistant and a final performance and
-accessibility pass.
+The Swarangan.AI assistant was dropped by decision. The `bot_knowledge` table
+remains in the schema, unused.
 
 ### How the admin login resists brute force
 
@@ -161,11 +165,9 @@ accessibility pass.
 
 ### Known items
 
-- **Fees and batch timings** are built but hidden (`FEES_PUBLISHED` in
-  `src/content/fees.ts`). No figures were invented — a wrong fee on a live site
-  is worse than none. Phase 2 makes this a toggle in the admin panel.
-- **Instagram** is built but switched off until an account exists.
 - **YouTube's "latest uploads" feed** currently returns 404 for the Swarangan
   channel — Google has been restricting that endpoint. The section simply does
   not render; the curated video list is unaffected. See the note in
   `src/lib/youtube-feed.ts`.
+- **Vercel Hobby is for non-commercial use.** Fine for the site as it is today;
+  move to Pro if it becomes a commercial business site.

@@ -8,8 +8,8 @@ import { whatsappHrefFor } from "@/lib/cms/settings";
  * On desktop the header already carries a WhatsApp button, so this would be
  * redundant clutter; on a phone, WhatsApp is how enquiries actually arrive.
  *
- * Sits above the left drone line and clear of the Phase 4 Swarangan.AI launcher,
- * which takes the bottom-right corner.
+ * Sits bottom-left, above the drone line, where it never covers page content
+ * a thumb is likely to reach for.
  */
 export async function WhatsAppFab() {
   const settings = await getSettings();

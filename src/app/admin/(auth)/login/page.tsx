@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { BrandLogo } from "@/components/ui/brand-logo";
 import { getAdmin } from "@/lib/auth/dal";
 import { isSupabaseConfigured } from "@/lib/env";
+
+import { AuthCard, AuthNotice } from "../auth-card";
 
 import { LoginForm } from "./login-form";
 
@@ -21,42 +23,29 @@ export default async function LoginPage({
   const signedOut = (await searchParams)["signed-out"] === "1";
 
   return (
-    <main className="flex min-h-svh items-center justify-center px-5 py-16">
-      <div className="w-full max-w-sm">
-        <BrandLogo
-          alt="Swarangan"
-          priority
-          className="mx-auto mb-8 h-14 w-auto"
-        />
+    <AuthCard title="Admin sign in" lead="For Swarangan staff only.">
+      {signedOut && (
+        <AuthNotice tone="success">You have been signed out.</AuthNotice>
+      )}
 
-        <div className="border-sand-300 rounded-(--radius-card) border bg-white p-8 shadow-(--shadow-lift)">
-          <h1 className="text-2xl">Admin sign in</h1>
-          <p className="text-ink-muted mt-1 mb-6 text-sm">
-            For Swarangan staff only.
+      {configured ? (
+        <>
+          <LoginForm />
+          <p className="mt-6 text-center text-sm">
+            <Link
+              href="/admin/forgot-password"
+              className="text-magenta-700 hover:underline"
+            >
+              Forgot your password?
+            </Link>
           </p>
-
-          {signedOut && (
-            <p
-              role="status"
-              className="mb-5 rounded-lg bg-green-50 p-3 text-sm text-green-800"
-            >
-              You have been signed out.
-            </p>
-          )}
-
-          {configured ? (
-            <LoginForm />
-          ) : (
-            <p
-              role="status"
-              className="bg-sand-100 text-ink-muted rounded-lg p-4 text-sm"
-            >
-              The admin panel is not connected to its database yet. Follow the
-              steps in <code>SETUP.md</code> to finish setting it up.
-            </p>
-          )}
-        </div>
-      </div>
-    </main>
+        </>
+      ) : (
+        <AuthNotice tone="info">
+          The admin panel is not connected to its database yet. Follow the steps
+          in <code>SETUP.md</code> to finish setting it up.
+        </AuthNotice>
+      )}
+    </AuthCard>
   );
 }

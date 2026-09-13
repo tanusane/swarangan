@@ -21,6 +21,13 @@ import { isSupabaseConfigured, supabaseEnv } from "@/lib/env";
  * getClaims() verifies the JWT signature against the project's published keys.
  * getSession() would merely trust the cookie, and must never be used here.
  */
+/** Admin pages a signed-out visitor must still reach. */
+const PUBLIC_AUTH_PATHS = [
+  "/admin/login",
+  "/admin/forgot-password",
+  "/admin/auth/confirm",
+];
+
 export async function proxy(request: NextRequest) {
   // Before Supabase is set up, let the login page explain what to do.
   if (!isSupabaseConfigured()) return NextResponse.next();
@@ -51,9 +58,11 @@ export async function proxy(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const signedIn = Boolean(data?.claims?.sub);
-  const onLogin = request.nextUrl.pathname.startsWith("/admin/login");
+  const isPublicAuthPage = PUBLIC_AUTH_PATHS.some((path) =>
+    request.nextUrl.pathname.startsWith(path),
+  );
 
-  if (!signedIn && !onLogin) {
+  if (!signedIn && !isPublicAuthPage) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.search = "";

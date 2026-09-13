@@ -541,30 +541,41 @@
       <section class="step" data-step="11">
         <div class="step-head">
           <span class="num">11</span>
-          <h2>Enquiry emails (optional)</h2>
+          <h2>Emails: enquiries and password resets</h2>
         </div>
         <p>
           Enquiries are always saved in <strong>Admin → Enquiries</strong>. This
-          step also emails each one to info@swarangan.sg.
+          step also emails them to you, and makes “Forgot your password?” work.
+          No DNS changes needed to start.
         </p>
         <ol>
           <li>
-            Create a free account at
+            Sign up at
             <a href="https://resend.com" target="_blank" rel="noopener"
               >resend.com</a
-            >.
-          </li>
-          <li>
-            <strong>Domains → Add domain</strong> → <code>swarangan.sg</code>,
-            add the DNS records it shows, then <strong>Verify</strong>.
+            >
+            <strong>with the address that should receive enquiries</strong>.
           </li>
           <li><strong>API Keys → Create API key</strong> (Sending access).</li>
           <li>
-            Add <code>RESEND_API_KEY</code> and
-            <code>RESEND_FROM="Swarangan &lt;enquiries@swarangan.sg&gt;"</code>
-            to <code>.env.local</code> and to Vercel.
+            Add to <code>.env.local</code> and Vercel:
+            <code>RESEND_API_KEY</code>,
+            <code>RESEND_FROM="Swarangan &lt;onboarding@resend.dev&gt;"</code>
+            and <code>ENQUIRY_NOTIFY_TO</code> = that sign-up address.
+          </li>
+          <li>Run <code>npm run test:email</code> and check the inbox.</li>
+          <li>
+            For password resets: in Supabase set the URL configuration, custom
+            SMTP (<code>smtp.resend.com</code>) and the reset email template
+            exactly as in <strong>SETUP.md step 11 B</strong>.
           </li>
         </ol>
+        <div class="note">
+          Later, verify <code>swarangan.sg</code> in Resend (step 11 C) so
+          visitors also get a “thank you” email. That does not require leaving
+          HostGator. Before cancelling HostGator, move the info@ mailbox if it
+          is hosted there.
+        </div>
         <label class="check"><input type="checkbox" /> Done</label>
       </section>
 

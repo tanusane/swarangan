@@ -5,9 +5,9 @@ import { digitsOnly } from "@/lib/utils";
  * Single source of truth for everything about the business that appears in more
  * than one place: contact details, address, social links, navigation.
  *
- * Phase 2 replaces the literals below with a read from the Supabase
- * `site_settings` table. Nothing else changes, because every component reads
- * from here rather than hard-coding a number or a URL.
+ * These are the shipped defaults. Anything an admin can change (phone, email,
+ * address, social links) is read from `site_settings` through
+ * lib/cms/settings.ts, which falls back to these values field by field.
  */
 
 /**

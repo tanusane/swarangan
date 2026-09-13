@@ -59,9 +59,12 @@ export function cronSecret(): string {
 
 const emailSchema = z.object({
   RESEND_API_KEY: z.string().startsWith("re_"),
-  // A sender on a domain verified in Resend, e.g.
-  // "Swarangan <enquiries@swarangan.sg>".
+  // Before swarangan.sg is verified in Resend: "Swarangan <onboarding@resend.dev>",
+  // which can only deliver to the Resend account's own email address.
+  // Afterwards: "Swarangan <enquiries@swarangan.sg>".
   RESEND_FROM: z.string().min(3),
+  // Where enquiry notifications go. Defaults to the email in Admin -> Settings.
+  ENQUIRY_NOTIFY_TO: z.email().optional().or(z.literal("")),
 });
 
 export type EmailEnv = z.infer<typeof emailSchema>;
@@ -74,4 +77,13 @@ export type EmailEnv = z.infer<typeof emailSchema>;
 export function emailEnv(): EmailEnv | null {
   const parsed = emailSchema.safeParse(process.env);
   return parsed.success ? parsed.data : null;
+}
+
+/**
+ * Resend's shared test sender only delivers to the account owner, so messages
+ * to anyone else (visitor acknowledgements) are skipped until a domain is
+ * verified rather than failing on every enquiry.
+ */
+export function canEmailAnyone(env: EmailEnv): boolean {
+  return !/@resend\.dev>?\s*$/i.test(env.RESEND_FROM);
 }

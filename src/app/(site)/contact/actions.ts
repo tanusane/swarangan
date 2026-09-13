@@ -13,7 +13,7 @@ import {
   type EnquiryInput,
   type EnquiryResult,
 } from "@/lib/enquiry-schema";
-import { isSupabaseConfigured } from "@/lib/env";
+import { canEmailAnyone, emailEnv, isSupabaseConfigured } from "@/lib/env";
 import { siteConfig } from "@/lib/site-config";
 import { secretClient } from "@/lib/supabase/clients";
 
@@ -107,8 +107,9 @@ export async function submitEnquiry(
 
     after(async () => {
       const settings = await getSettings();
+      const emailConfig = emailEnv();
       const notified = await sendEmail({
-        to: settings.email,
+        to: emailConfig?.ENQUIRY_NOTIFY_TO || settings.email,
         replyTo: email,
         ...notificationEmail(record, `${siteConfig.url}/admin/enquiries`),
       });
@@ -118,6 +119,7 @@ export async function submitEnquiry(
           .update({ email_sent: true })
           .eq("id", saved.id);
       }
+      if (!emailConfig || !canEmailAnyone(emailConfig)) return;
       await sendEmail({
         to: email,
         replyTo: settings.email,

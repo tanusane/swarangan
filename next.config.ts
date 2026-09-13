@@ -1,13 +1,43 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 /**
- * Security headers.
+ * Content-Security-Policy: an allow-list of where the page may load things
+ * from, so injected markup cannot pull in a script, frame the site, or post a
+ * form elsewhere.
  *
- * No Content-Security-Policy yet: it lands in Phase 2 alongside Supabase and
- * the admin panel, where a wrong policy would silently break authentication. The
- * headers below are the ones that are safe and useful to set now.
+ * Scripts allow 'unsafe-inline' deliberately. Next.js inlines its bootstrap and
+ * the structured data; the alternative — a per-request nonce — would make every
+ * page render dynamically and throw away the static speed of the public site.
+ * Everything else is locked to named hosts, and user-edited text is already
+ * escaped where it reaches a script (lib/json-ld.ts).
+ *
+ * Adding an embed from a new service means adding its host here, or it will be
+ * blocked silently.
  */
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  // data:/blob: for blur placeholders and upload previews in the admin.
+  "img-src 'self' data: blob: https://i.ytimg.com https://*.supabase.co",
+  "font-src 'self'",
+  // The admin uploads photos straight to Supabase Storage from the browser.
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+  // YouTube players, Instagram posts, the Facebook page preview, the map.
+  "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://www.instagram.com https://www.facebook.com https://maps.google.com https://www.google.com",
+  "media-src 'self'",
+  "worker-src 'self' blob:",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
+].join("; ");
+
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: csp },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

@@ -8,8 +8,8 @@ import type { Testimonial } from "@/content/types";
  * original spacing and the ".... " in Avani Dayal's note. A test in
  * src/content/__tests__/content-fidelity.test.ts asserts they stay byte-exact.
  *
- * Phase 2 moves these into the Supabase `testimonials` table, seeded from here,
- * after which Tanuja can add new ones from the admin panel.
+ * The admin import copies these into the `testimonials` table verbatim; from
+ * then on they are managed from Admin → Testimonials.
  */
 export const testimonials: readonly Testimonial[] = [
   {

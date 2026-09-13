@@ -11,15 +11,11 @@ export interface FeePlan {
 /**
  * Fees and batch timings.
  *
- * Amit was undecided about publishing these, so the section is fully built but
- * switched OFF. Nothing is invented here: the list is intentionally empty
- * rather than filled with plausible-looking prices, because a wrong fee on a
- * live site is worse than no fee at all.
+ * Nothing is invented here: the list is intentionally empty rather than filled
+ * with plausible-looking prices, because a wrong fee on a live site is worse
+ * than no fee at all. The fees section only appears once a plan is published.
  *
- * Phase 2 moves this to the Supabase `fee_plans` table with a `published`
- * column, at which point Tanuja can enter the real figures and reveal the
- * section herself from the admin panel — no code change.
+ * This is only the fallback before the admin import. Real fees live in the
+ * `fee_plans` table, entered and published from Admin → Classes & fees.
  */
-export const FEES_PUBLISHED = false;
-
 export const feePlans: readonly FeePlan[] = [];

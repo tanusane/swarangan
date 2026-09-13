@@ -21,7 +21,7 @@ const inter = Inter({
 });
 
 /* Loaded now so the swara glyphs in the section headings and the hero render in
-   their intended face, and so the Phase 2 Hindi/Marathi locales need no change. */
+   their intended face, and so future Hindi/Marathi content needs no change. */
 const notoDevanagari = Noto_Sans_Devanagari({
   subsets: ["devanagari"],
   display: "swap",

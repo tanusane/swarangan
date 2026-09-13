@@ -23,7 +23,12 @@ export const metadata: Metadata = { title: "Dashboard" };
  * keepalive is working, and whether anyone is trying to break into the login.
  * Data loading, including the admin check, lives in lib/admin/dashboard.ts.
  */
-export default async function AdminDashboard() {
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const passwordUpdated = (await searchParams)["password-updated"] === "1";
   const [{ health, heartbeatSource, recentFailures, stats }, { imported }] =
     await Promise.all([loadDashboard(), loadAdminSettings()]);
 
@@ -36,6 +41,15 @@ export default async function AdminDashboard() {
           above.
         </p>
       </div>
+
+      {passwordUpdated && (
+        <p
+          role="status"
+          className="rounded-lg bg-green-50 p-4 text-sm text-green-800"
+        >
+          Your password has been changed.
+        </p>
+      )}
 
       {!imported && <ImportCard />}
 

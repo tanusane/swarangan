@@ -119,6 +119,12 @@ Vercel Cron (step 8) and a GitHub Action.
    - `SITE_URL` = `https://www.swarangan.sg`
    - `CRON_SECRET` = the same value used in Vercel
 2. **Actions → Supabase keepalive → Run workflow** to test it immediately.
+   After that it runs **by itself every day** — nobody needs to press anything.
+
+> **"Keepalive returned HTTP 404"** means `SITE_URL` points at a site that is
+> not this app yet — for example www.swarangan.sg while it is still on
+> HostGator. Until the domain is moved, set `SITE_URL` to the Vercel address
+> (`https://<project>.vercel.app`), then change it back after the move.
 
 The admin dashboard shows when the last ping arrived, and warns if none has
 arrived for two days.
@@ -165,24 +171,74 @@ it most happens off the website:
 > #07-09 West Bay Condominium, Singapore 128036** — including on the Google
 > Business Profile. Search engines cross-check it everywhere it appears.
 
-## 11. Enquiry emails (optional, free)
+## 11. Emails — enquiries and password resets (free)
 
-Enquiries from the contact form are **always saved** and appear under
-**Admin → Enquiries**, with or without this step. This step adds an email to
-info@swarangan.sg for each one, and a short "thank you" to the visitor.
+Enquiries from the contact form are **always saved** under
+**Admin → Enquiries**. This step makes each one also arrive **by email**, and
+makes **"Forgot your password?"** on the admin login send its link.
 
-1. Create a free account at [resend.com](https://resend.com) (3,000 emails a
-   month, no card).
-2. **Domains → Add domain** → `swarangan.sg`. Resend shows a few DNS records;
-   add them where the domain is managed, then click **Verify**.
-3. **API Keys → Create API key** (permission: *Sending access*).
-4. Add both to `.env.local` and to Vercel's environment variables:
+### A. Enquiry emails — works today, no DNS changes
+
+1. Sign up at [resend.com](https://resend.com) **using the email address that
+   should receive enquiries** (for example info@swarangan.sg). Free: 3,000
+   emails a month, no card.
+2. **API Keys → Create API key** (permission: _Sending access_).
+3. Add to `.env.local`, and to Vercel's environment variables:
    ```
    RESEND_API_KEY=re_...
-   RESEND_FROM="Swarangan <enquiries@swarangan.sg>"
+   RESEND_FROM="Swarangan <onboarding@resend.dev>"
+   ENQUIRY_NOTIFY_TO=info@swarangan.sg
    ```
-5. Send yourself a test through the contact form. In the inbox, an enquiry
-   whose email did not go out is marked "No email notification was sent".
+   `ENQUIRY_NOTIFY_TO` must be the address you signed up to Resend with — the
+   shared `onboarding@resend.dev` sender only delivers to that address.
+4. Test it:
+   ```bash
+   npm run test:email
+   ```
+   Then send a real message through the contact form. It appears under
+   Admin → Enquiries and in the inbox. An enquiry whose email did not go out is
+   marked "No email notification was sent".
+
+### B. Password-reset emails
+
+1. Supabase → **Authentication → URL Configuration**:
+   - **Site URL**: `https://www.swarangan.sg`
+   - **Redirect URLs** → add `https://www.swarangan.sg/admin/auth/confirm` and
+     `http://localhost:3000/admin/auth/confirm`
+2. Supabase → **Authentication → Emails → SMTP Settings** → enable custom SMTP
+   (Supabase's own sender only reaches team members, a couple of times an
+   hour):
+   - Host `smtp.resend.com`, port `465`, username `resend`
+   - Password: the Resend API key from A
+   - Sender email: `onboarding@resend.dev` for now (reset emails then reach
+     only the Resend sign-up address, which is fine while that is the admin),
+     later `enquiries@swarangan.sg`
+   - Sender name: `Swarangan`
+3. Supabase → **Authentication → Emails → Templates → Reset Password**, replace
+   the link in the message with:
+   ```
+   <a href="{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery">Choose a new password</a>
+   ```
+   This lets the link work even when opened on a different device.
+4. Test: on the login page click **Forgot your password?**
+
+### C. Later — send from swarangan.sg (needed for "thank you" emails to visitors)
+
+This does **not** require moving the domain away from HostGator. Add the
+records wherever the domain's DNS is managed today.
+
+1. Resend → **Domains → Add domain** → `swarangan.sg`. Add the DNS records it
+   shows (they sit on a `send.` subdomain and `resend._domainkey`, so the
+   current website and mailboxes are unaffected), then **Verify**.
+2. Change `RESEND_FROM="Swarangan <enquiries@swarangan.sg>"` (in `.env.local`
+   and Vercel), and the Supabase SMTP sender to the same address.
+3. Visitors now also receive a short acknowledgement after enquiring.
+
+> **Before cancelling HostGator:** if the info@swarangan.sg mailbox is hosted
+> there, it stops working when the plan ends. Move the mailbox first (for
+> example Zoho Mail's free plan) — Resend sends email but does not provide an
+> inbox. If you later move the domain's nameservers to Vercel, copy every DNS
+> record across first, including Resend's and the mail (MX) records.
 
 ## 12. Backups
 

@@ -18,6 +18,8 @@ export type AuditAction =
   | "auth.sign_in_failed"
   | "auth.sign_in_blocked"
   | "auth.sign_out"
+  | "auth.password_reset_requested"
+  | "auth.password_changed"
   | "media.update"
   | "media.reset"
   | "content.import"

@@ -23,9 +23,8 @@ import { submitEnquiry } from "@/app/(site)/contact/actions";
  * Action rather than a hand-rolled fetch, which means there is a single
  * auth-checked, validated write path.
  *
- * In Phase 1 the action stores nothing — it validates and returns. Phase 2
- * swaps its body for the Supabase insert plus the Resend notification, with no
- * change to this component.
+ * The action saves the enquiry to the admin inbox and sends the notification
+ * emails; see app/(site)/contact/actions.ts.
  */
 export function EnquiryForm() {
   const [sent, setSent] = useState(false);
