@@ -10,9 +10,14 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { ProseSection, Section } from "@/components/ui/section";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { whyBlock } from "@/content/home";
-import { feePlans, FEES_PUBLISHED } from "@/content/fees";
-import { whatsappHref } from "@/lib/site-config";
+import {
+  getClassOfferings,
+  getFeePlans,
+  getLocations,
+  getSection,
+  getSettings,
+} from "@/lib/cms/repository";
+import { whatsappHrefFor } from "@/lib/cms/settings";
 
 export const metadata: Metadata = {
   title: "Classes",
@@ -28,7 +33,16 @@ export const metadata: Metadata = {
  * objects, not copies — so the two pages can never disagree about what is
  * taught or where.
  */
-export default function ClassesPage() {
+export default async function ClassesPage() {
+  const [whyBlock, offerings, locations, feePlans, settings] =
+    await Promise.all([
+      getSection("why-hindustani-classical-music"),
+      getClassOfferings(),
+      getLocations(),
+      getFeePlans(),
+      getSettings(),
+    ]);
+
   return (
     <>
       <BreadcrumbSchema
@@ -50,23 +64,28 @@ export default function ClassesPage() {
         title="Our classes"
         swaraIndex={0}
       >
-        <ClassOfferingsGrid headingLevel="h2" />
+        <ClassOfferingsGrid
+          offerings={offerings}
+          note={settings.classesNote}
+          headingLevel="h2"
+        />
       </Section>
 
-      <ProseSection block={whyBlock} swaraIndex={1} ground="sand" size="lg" />
+      {whyBlock && (
+        <ProseSection block={whyBlock} swaraIndex={1} ground="sand" size="lg" />
+      )}
 
       <Section
         eyebrow="Where classes happen"
         title="In the studio, at your home, or online"
         swaraIndex={2}
       >
-        <LocationsGrid headingLevel="h2" />
+        <LocationsGrid locations={locations} headingLevel="h2" />
       </Section>
 
       {/* -- Fees and batch timings ------------------------------------------
-          Built and ready, hidden until Tanuja decides to publish them. Phase 2
-          turns FEES_PUBLISHED into a toggle in the admin panel. */}
-      {FEES_PUBLISHED && feePlans.length > 0 && (
+          Shown only once at least one fee plan is published from the admin. */}
+      {feePlans.length > 0 && (
         <Section
           eyebrow="Fees and timings"
           title="Batches and fees"
@@ -105,7 +124,11 @@ export default function ClassesPage() {
               <ButtonLink href="/contact" size="lg">
                 Enquire about classes
               </ButtonLink>
-              <ButtonLink href={whatsappHref()} variant="whatsapp" size="lg">
+              <ButtonLink
+                href={whatsappHrefFor(settings)}
+                variant="whatsapp"
+                size="lg"
+              >
                 <WhatsAppIcon className="size-5" />
                 Ask on WhatsApp
               </ButtonLink>

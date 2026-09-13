@@ -1,11 +1,12 @@
 import {
-  classOfferings,
-  classesNote,
-  locationOptions,
-  teacherBlock,
-} from "@/content/home";
-import { testimonials } from "@/content/testimonials";
-import { formattedAddress, navigation, siteConfig } from "@/lib/site-config";
+  getClassOfferings,
+  getLocations,
+  getSection,
+  getSettings,
+  getTestimonials,
+} from "@/lib/cms/repository";
+import { addressLineFor } from "@/lib/cms/settings";
+import { navigation, siteConfig } from "@/lib/site-config";
 
 /**
  * /llms.txt — a plain-text briefing for AI assistants.
@@ -25,7 +26,20 @@ function absolute(path: string): string {
   return new URL(path, siteConfig.url).toString();
 }
 
-export function GET() {
+export async function GET() {
+  const [
+    settings,
+    classOfferings,
+    locationOptions,
+    teacherBlock,
+    testimonials,
+  ] = await Promise.all([
+    getSettings(),
+    getClassOfferings(),
+    getLocations(),
+    getSection("tanuja-sane"),
+    getTestimonials(),
+  ]);
   const pages = navigation
     .map((item) => `- [${item.label}](${absolute(item.href)})`)
     .join("\n");
@@ -40,10 +54,10 @@ export function GET() {
 
   const body = `# ${siteConfig.name}
 
-> ${siteConfig.description}
+> ${settings.description}
 
 Swarangan is a Hindustani classical music school in Singapore, founded and led
-by Tanuja Sane (M.A. Music). The studio is at ${formattedAddress()}, in the
+by Tanuja Sane (M.A. Music). The studio is at ${addressLineFor(settings)}, in the
 West Coast / Clementi area of Singapore's West Region. Classes are also taught
 at students' homes across Singapore and online in any time zone.
 
@@ -51,7 +65,7 @@ at students' homes across Singapore and online in any time zone.
 
 ${classes}
 
-${classesNote}
+${settings.classesNote}
 
 ## Where classes happen
 
@@ -59,7 +73,7 @@ ${formats}
 
 ## The teacher
 
-${teacherBlock.body.join("\n\n")}
+${teacherBlock ? teacherBlock.body.join("\n\n") : ""}
 
 ## What students and parents say
 
@@ -67,11 +81,11 @@ ${testimonials.length} testimonials are published at ${absolute("/testimonials")
 
 ## Contact
 
-- Phone and WhatsApp: ${siteConfig.contact.phoneDisplay}
-- Email: ${siteConfig.contact.email}
-- Instagram: ${siteConfig.social.instagram}
-- YouTube: ${siteConfig.social.youtube}
-- Facebook: ${siteConfig.social.facebook}
+- Phone and WhatsApp: ${settings.phoneDisplay}
+- Email: ${settings.email}
+- Instagram: ${settings.instagram}
+- YouTube: ${settings.youtube}
+- Facebook: ${settings.facebook}
 
 ## Pages
 

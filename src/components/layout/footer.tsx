@@ -4,16 +4,17 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { WhatsAppIcon } from "@/components/ui/icons";
 import { SocialLinks } from "@/components/ui/social-links";
+import { getSettings } from "@/lib/cms/repository";
 import {
-  formattedAddress,
-  mailtoHref,
-  navigation,
-  siteConfig,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-config";
+  addressLineFor,
+  mailtoHrefFor,
+  telHrefFor,
+  whatsappHrefFor,
+} from "@/lib/cms/settings";
+import { navigation, siteConfig } from "@/lib/site-config";
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSettings();
   return (
     <footer className="text-sand-200 bg-blue-950">
       <div className="container-swar py-16">
@@ -22,9 +23,9 @@ export function Footer() {
           <div>
             <BrandLogo variant="reverse" className="mb-5 h-12 w-auto" />
             <p className="text-sand-300 max-w-xs text-sm">
-              {siteConfig.description}
+              {settings.description}
             </p>
-            <SocialLinks tone="dark" className="mt-6" />
+            <SocialLinks settings={settings} tone="dark" className="mt-6" />
           </div>
 
           {/* -- Navigation -------------------------------------------------- */}
@@ -58,7 +59,7 @@ export function Footer() {
                   className="text-gold-300 mt-0.5 size-4 shrink-0"
                 />
                 <address className="text-sand-300 not-italic">
-                  {formattedAddress()}
+                  {addressLineFor(settings)}
                 </address>
               </li>
               <li className="flex items-center gap-3">
@@ -67,14 +68,14 @@ export function Footer() {
                   className="text-gold-300 size-4 shrink-0"
                 />
                 <a
-                  href={telHref}
+                  href={telHrefFor(settings)}
                   className="text-sand-300 hover:text-gold-300 transition-colors"
                 >
-                  {siteConfig.contact.phoneDisplay}
+                  {settings.phoneDisplay}
                 </a>
                 {/* Amit's request: WhatsApp sits right beside the number. */}
                 <a
-                  href={whatsappHref()}
+                  href={whatsappHrefFor(settings)}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Message this number on WhatsApp"
@@ -90,10 +91,10 @@ export function Footer() {
                   className="text-gold-300 size-4 shrink-0"
                 />
                 <a
-                  href={mailtoHref}
+                  href={mailtoHrefFor(settings)}
                   className="text-sand-300 hover:text-gold-300 transition-colors"
                 >
-                  {siteConfig.contact.email}
+                  {settings.email}
                 </a>
               </li>
             </ul>

@@ -1,10 +1,16 @@
-import { classOfferings } from "@/content/home";
-import { testimonials } from "@/content/testimonials";
+import type { ClassOffering, Testimonial } from "@/content/types";
+import { jsonLd } from "@/lib/json-ld";
 import {
-  directionsHref,
-  formattedAddress,
-  siteConfig,
-} from "@/lib/site-config";
+  getClassOfferings,
+  getSettings,
+  getTestimonials,
+} from "@/lib/cms/repository";
+import {
+  directionsHrefFor,
+  phoneE164,
+  type SiteSettings,
+} from "@/lib/cms/settings";
+import { siteConfig } from "@/lib/site-config";
 
 /**
  * JSON-LD structured data.
@@ -14,14 +20,21 @@ import {
  * lets Google associate the reviews with the business rather than treating them
  * as orphan snippets.
  *
- * The literals come from siteConfig and the content seed, so this can never
- * drift from what the page actually says.
+ * Built from the same settings and content the pages render, so it can never
+ * drift from what the page actually says. Admin-editable text reaches this, so
+ * it is serialised with jsonLd(), which escapes anything that could close the
+ * <script> tag.
  */
 
 const SCHOOL_ID = `${siteConfig.url}/#organization`;
 const PERSON_ID = `${siteConfig.url}/#tanuja-sane`;
 
-function graph() {
+function graph(
+  settings: SiteSettings,
+  classOfferings: readonly ClassOffering[],
+  testimonials: readonly Testimonial[],
+) {
+  const telephone = phoneE164(settings.phoneDisplay);
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -30,17 +43,17 @@ function graph() {
         "@id": SCHOOL_ID,
         name: siteConfig.name,
         legalName: siteConfig.legalName,
-        description: siteConfig.description,
+        description: settings.description,
         url: siteConfig.url,
-        telephone: siteConfig.contact.phoneE164,
-        email: siteConfig.contact.email,
+        telephone,
+        email: settings.email,
         image: `${siteConfig.url}/images/events/af2026-thumri-se-ghazal-tak.jpg`,
         logo: `${siteConfig.url}/images/brand/logo.png`,
         address: {
           "@type": "PostalAddress",
-          streetAddress: `${siteConfig.address.street}, ${siteConfig.address.unit} ${siteConfig.address.building}`,
+          streetAddress: `${settings.street}, ${settings.unit} ${settings.building}`,
           addressLocality: siteConfig.address.locality,
-          postalCode: siteConfig.address.postalCode,
+          postalCode: settings.postalCode,
           addressCountry: siteConfig.address.country,
         },
         geo: {
@@ -56,11 +69,11 @@ function graph() {
             name: `${siteConfig.address.neighbourhood}, Singapore`,
           },
         ],
-        hasMap: directionsHref(),
+        hasMap: directionsHrefFor(settings),
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: siteConfig.contact.phoneE164,
-          email: siteConfig.contact.email,
+          telephone,
+          email: settings.email,
           contactType: "admissions",
           areaServed: "SG",
         },
@@ -82,11 +95,7 @@ function graph() {
         },
         founder: { "@id": PERSON_ID },
         employee: { "@id": PERSON_ID },
-        sameAs: [
-          siteConfig.social.instagram,
-          siteConfig.social.youtube,
-          siteConfig.social.facebook,
-        ],
+        sameAs: [settings.instagram, settings.youtube, settings.facebook],
         knowsAbout: [
           "Hindustani classical music",
           "Khayal",
@@ -129,13 +138,20 @@ function graph() {
   };
 }
 
-export function OrganizationSchema() {
+export async function OrganizationSchema() {
+  const [settings, offerings, testimonials] = await Promise.all([
+    getSettings(),
+    getClassOfferings(),
+    getTestimonials(),
+  ]);
+
   return (
     <script
       type="application/ld+json"
-      // The payload is built entirely from our own literals — no user input
-      // reaches it, so there is nothing here to escape.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph()) }}
+      // jsonLd() escapes "<", so admin-entered text cannot close this tag.
+      dangerouslySetInnerHTML={{
+        __html: jsonLd(graph(settings, offerings, testimonials)),
+      }}
     />
   );
 }
@@ -160,10 +176,7 @@ export function BreadcrumbSchema({
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
+      dangerouslySetInnerHTML={{ __html: jsonLd(payload) }}
     />
   );
 }
-
-/** Address as a single line, for reuse in page copy. */
-export const addressLine = formattedAddress;

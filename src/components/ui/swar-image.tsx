@@ -48,3 +48,16 @@ export function SwarImage({ image, alt, className, ...rest }: SwarImageProps) {
 export function getImage(image: ImageKey) {
   return imageManifest[image];
 }
+
+const BLUR_BY_SRC = new Map<string, string>(
+  Object.values(imageManifest).map((entry) => [entry.src, entry.blurDataURL]),
+);
+
+/**
+ * The build-time blur placeholder for an image that ships with the site, looked
+ * up by its path. Photos uploaded through the admin have none, and get undefined
+ * rather than a crash.
+ */
+export function blurFor(src: string): string | undefined {
+  return BLUR_BY_SRC.get(src);
+}

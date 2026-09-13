@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Lightbox } from "@/components/gallery/lightbox";
 import { Reveal } from "@/components/ui/reveal";
-import { imageManifest } from "@/content/generated/image-manifest";
+import { blurFor } from "@/components/ui/swar-image";
 import type { GalleryAlbum, GalleryPhoto } from "@/content/types";
 
 interface PhotoGridProps {
@@ -52,8 +52,7 @@ export function PhotoGrid({ albums, photos }: PhotoGridProps) {
                   // Index into the FLAT list so the lightbox can walk the whole
                   // gallery from wherever the visitor entered it.
                   const flatIndex = photos.indexOf(photo);
-                  const entry =
-                    imageManifest[photo.key as keyof typeof imageManifest];
+                  const blurDataURL = blurFor(photo.src);
 
                   return (
                     <Reveal
@@ -73,8 +72,9 @@ export function PhotoGrid({ albums, photos }: PhotoGridProps) {
                           width={photo.width}
                           height={photo.height}
                           sizes="(min-width: 1024px) 30vw, (min-width: 768px) 33vw, 50vw"
-                          placeholder="blur"
-                          blurDataURL={entry.blurDataURL}
+                          {...(blurDataURL
+                            ? { placeholder: "blur" as const, blurDataURL }
+                            : {})}
                           className="aspect-4/3 w-full object-cover transition-transform duration-700 ease-(--ease-swar) group-hover:scale-105"
                         />
                         {/* Caption appears on hover and always on touch, where

@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { ButtonLink } from "@/components/ui/button";
 import { SWARAS } from "@/components/ui/icons";
-import { siteConfig } from "@/lib/site-config";
+import { useSiteSettings } from "@/components/providers/site-settings";
 import { usePrefersReducedMotion } from "@/lib/use-external-state";
 
 /**
@@ -26,6 +26,7 @@ export function Hero() {
   const rootRef = useRef<HTMLElement>(null);
   const notesRef = useRef<HTMLDivElement>(null);
   const reducedMotion = usePrefersReducedMotion();
+  const { tagline } = useSiteSettings();
 
   // Entrance: the eyebrow, the logo settling in, then the tagline and actions.
   useEffect(() => {
@@ -139,8 +140,8 @@ export function Hero() {
           data-hero="line"
           className="text-sand-200 mt-10 max-w-2xl text-lg opacity-0 motion-reduce:opacity-100 md:text-xl"
         >
-          {siteConfig.tagline} — Hindustani classical, semi-classical and light
-          vocal music, taught in the Guru–Shishya tradition.
+          {tagline} — Hindustani classical, semi-classical and light vocal
+          music, taught in the Guru–Shishya tradition.
         </p>
 
         <div

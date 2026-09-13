@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 
-import { imageManifest } from "@/content/generated/image-manifest";
+import { blurFor } from "@/components/ui/swar-image";
 import type { GalleryPhoto } from "@/content/types";
 import { useCarousel } from "@/lib/use-carousel";
 
@@ -60,10 +60,7 @@ export function Lightbox({ photos, startIndex, onClose }: LightboxProps) {
   const photo = photos[index];
   if (!photo) return null;
 
-  const blurDataURL =
-    photo.key in imageManifest
-      ? imageManifest[photo.key as keyof typeof imageManifest].blurDataURL
-      : undefined;
+  const blurDataURL = blurFor(photo.src);
 
   return (
     <div

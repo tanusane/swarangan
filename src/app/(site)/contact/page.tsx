@@ -9,12 +9,8 @@ import { WhatsAppIcon } from "@/components/ui/icons";
 import { PageHeader } from "@/components/ui/page-header";
 import { SocialLinks } from "@/components/ui/social-links";
 import { Reveal } from "@/components/ui/reveal";
-import {
-  mailtoHref,
-  siteConfig,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-config";
+import { getSettings } from "@/lib/cms/repository";
+import { mailtoHrefFor, telHrefFor, whatsappHrefFor } from "@/lib/cms/settings";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -23,7 +19,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getSettings();
+
   return (
     <>
       <BreadcrumbSchema
@@ -68,15 +66,15 @@ export default function ContactPage() {
                       <div>
                         <p className="font-medium text-blue-800">Phone</p>
                         <a
-                          href={telHref}
+                          href={telHrefFor(settings)}
                           className="text-ink-muted hover:text-magenta-700 transition-colors"
                         >
-                          {siteConfig.contact.phoneDisplay}
+                          {settings.phoneDisplay}
                         </a>
                         {/* Amit's request: WhatsApp right beside the number. */}
                         <div className="mt-3">
                           <ButtonLink
-                            href={whatsappHref()}
+                            href={whatsappHrefFor(settings)}
                             variant="whatsapp"
                             size="sm"
                           >
@@ -95,10 +93,10 @@ export default function ContactPage() {
                       <div>
                         <p className="font-medium text-blue-800">Email</p>
                         <a
-                          href={mailtoHref}
+                          href={mailtoHrefFor(settings)}
                           className="text-ink-muted hover:text-magenta-700 break-all transition-colors"
                         >
-                          {siteConfig.contact.email}
+                          {settings.email}
                         </a>
                       </div>
                     </li>
@@ -111,12 +109,11 @@ export default function ContactPage() {
                       <div>
                         <p className="font-medium text-blue-800">Studio</p>
                         <address className="text-ink-muted not-italic">
-                          {siteConfig.address.street}, {siteConfig.address.unit}
+                          {settings.street}, {settings.unit}
                           <br />
-                          {siteConfig.address.building}
+                          {settings.building}
                           <br />
-                          {siteConfig.address.locality} —{" "}
-                          {siteConfig.address.postalCode}
+                          Singapore — {settings.postalCode}
                         </address>
                       </div>
                     </li>
@@ -140,7 +137,7 @@ export default function ContactPage() {
                     <p className="mb-3 text-sm font-medium text-blue-800">
                       Follow us
                     </p>
-                    <SocialLinks />
+                    <SocialLinks settings={settings} />
                   </div>
                 </div>
               </Reveal>

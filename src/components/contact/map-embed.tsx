@@ -4,11 +4,12 @@ import { MapPin } from "lucide-react";
 import { useState } from "react";
 
 import { ButtonLink } from "@/components/ui/button";
+import { useSiteSettings } from "@/components/providers/site-settings";
 import {
-  directionsHref,
-  formattedAddress,
-  mapEmbedSrc,
-} from "@/lib/site-config";
+  addressLineFor,
+  directionsHrefFor,
+  mapEmbedSrcFor,
+} from "@/lib/cms/settings";
 
 /**
  * The map, right-sized.
@@ -23,14 +24,16 @@ import {
  */
 export function MapEmbed() {
   const [loaded, setLoaded] = useState(false);
+  const settings = useSiteSettings();
+  const address = addressLineFor(settings);
 
   return (
     <div className="space-y-4">
       <div className="border-sand-300 bg-sand-200 relative aspect-video max-h-[420px] w-full overflow-hidden rounded-(--radius-card) border">
         {loaded ? (
           <iframe
-            src={mapEmbedSrc()}
-            title={`Map showing ${formattedAddress()}`}
+            src={mapEmbedSrcFor(settings)}
+            title={`Map showing ${address}`}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             className="absolute inset-0 size-full border-0"
@@ -59,13 +62,17 @@ export function MapEmbed() {
               Show the map
             </span>
             <span className="text-ink-muted relative max-w-xs px-6 text-center text-xs">
-              {formattedAddress()}
+              {address}
             </span>
           </button>
         )}
       </div>
 
-      <ButtonLink href={directionsHref()} variant="secondary" size="sm">
+      <ButtonLink
+        href={directionsHrefFor(settings)}
+        variant="secondary"
+        size="sm"
+      >
         <MapPin aria-hidden="true" className="size-4" />
         Get directions
       </ButtonLink>

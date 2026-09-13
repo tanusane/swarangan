@@ -10,13 +10,14 @@ import { ProseSection, Section, SwarDivider } from "@/components/ui/section";
 import { SlotImage } from "@/components/ui/slot-image";
 import { SwarImage } from "@/components/ui/swar-image";
 import { sectionAsides } from "@/content/asides";
+import { examinationHeading } from "@/content/home";
 import {
-  examinationHeading,
-  introBlocks,
-  quote,
-  teacherBlock,
-  whyBlock,
-} from "@/content/home";
+  getClassOfferings,
+  getIntroBlocks,
+  getLocations,
+  getSection,
+  getSettings,
+} from "@/lib/cms/repository";
 import { siteConfig } from "@/lib/site-config";
 
 /**
@@ -27,7 +28,17 @@ import { siteConfig } from "@/lib/site-config";
  * then the quote and affiliations. `swaraIndex` walks the ascending scale as the
  * visitor scrolls.
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const [introBlocks, whyBlock, teacherBlock, offerings, locations, settings] =
+    await Promise.all([
+      getIntroBlocks(),
+      getSection("why-hindustani-classical-music"),
+      getSection("tanuja-sane"),
+      getClassOfferings(),
+      getLocations(),
+      getSettings(),
+    ]);
+
   return (
     <>
       <Hero />
@@ -45,7 +56,7 @@ export default function HomePage() {
           <div className="grid gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="space-y-5 lg:col-span-7">
               {block.body.map((paragraph, p) => (
-                <Reveal key={paragraph.slice(0, 40)} delay={p * 0.06}>
+                <Reveal key={`${block.key}-${p}`} delay={p * 0.06}>
                   <p className="text-ink-muted">{paragraph}</p>
                 </Reveal>
               ))}
@@ -72,11 +83,17 @@ export default function HomePage() {
         title="Classes at Swarangan"
         swaraIndex={4}
       >
-        <ClassOfferingsGrid headingLevel="h3" />
+        <ClassOfferingsGrid
+          offerings={offerings}
+          note={settings.classesNote}
+          headingLevel="h3"
+        />
       </Section>
 
       {/* -- Why ------------------------------------------------------------- */}
-      <ProseSection block={whyBlock} swaraIndex={5} ground="sand" size="lg" />
+      {whyBlock && (
+        <ProseSection block={whyBlock} swaraIndex={5} ground="sand" size="lg" />
+      )}
 
       {/* -- Where ----------------------------------------------------------- */}
       <Section
@@ -85,57 +102,61 @@ export default function HomePage() {
         title="In the studio, at your home, or online"
         swaraIndex={6}
       >
-        <LocationsGrid headingLevel="h3" />
+        <LocationsGrid locations={locations} headingLevel="h3" />
       </Section>
 
       {/* -- Tanuja ---------------------------------------------------------- */}
-      <Section
-        id={teacherBlock.key}
-        eyebrow={teacherBlock.eyebrow}
-        title={teacherBlock.title}
-        swaraIndex={7}
-        ground="sand"
-      >
-        <div className="grid items-start gap-12 lg:grid-cols-12">
-          <Reveal variant="leaf" className="lg:col-span-5">
-            <figure className="relative">
-              <div
-                aria-hidden="true"
-                className="bg-magenta-600/10 absolute -inset-3 -z-10 rounded-(--radius-card)"
-              />
-              {/* Replaceable from Admin -> Images. Falls back to the photo
+      {teacherBlock && (
+        <Section
+          id={teacherBlock.key}
+          eyebrow={teacherBlock.eyebrow}
+          title={teacherBlock.title}
+          swaraIndex={7}
+          ground="sand"
+        >
+          <div className="grid items-start gap-12 lg:grid-cols-12">
+            <Reveal variant="leaf" className="lg:col-span-5">
+              <figure className="relative">
+                <div
+                  aria-hidden="true"
+                  className="bg-magenta-600/10 absolute -inset-3 -z-10 rounded-(--radius-card)"
+                />
+                {/* Replaceable from Admin -> Images. Falls back to the photo
                   that ships with the site until one is uploaded. */}
-              <SlotImage
-                slot="home.teacher.portrait"
-                sizes="(min-width: 1024px) 38vw, 90vw"
-                className="rounded-(--radius-card) shadow-(--shadow-lift-lg)"
-              />
-            </figure>
-          </Reveal>
-
-          <div className="space-y-5 lg:col-span-7">
-            {teacherBlock.body.map((paragraph, p) => (
-              <Reveal key={paragraph.slice(0, 40)} delay={p * 0.06}>
-                <p className="text-ink-muted">{paragraph}</p>
-              </Reveal>
-            ))}
-            <Reveal delay={0.25}>
-              <ButtonLink href="/contact" className="mt-3">
-                Enquire about classes
-              </ButtonLink>
+                <SlotImage
+                  slot="home.teacher.portrait"
+                  sizes="(min-width: 1024px) 38vw, 90vw"
+                  className="rounded-(--radius-card) shadow-(--shadow-lift-lg)"
+                />
+              </figure>
             </Reveal>
+
+            <div className="space-y-5 lg:col-span-7">
+              {teacherBlock.body.map((paragraph, p) => (
+                <Reveal key={`teacher-${p}`} delay={p * 0.06}>
+                  <p className="text-ink-muted">{paragraph}</p>
+                </Reveal>
+              ))}
+              <Reveal delay={0.25}>
+                <ButtonLink href="/contact" className="mt-3">
+                  Enquire about classes
+                </ButtonLink>
+              </Reveal>
+            </div>
           </div>
-        </div>
-      </Section>
+        </Section>
+      )}
 
       {/* -- Quote ----------------------------------------------------------- */}
       <section className="bg-blue-950 py-(--spacing-section)">
         <div className="container-prose text-center">
           <Reveal>
             <blockquote className="text-sand-50 text-2xl leading-snug font-(--font-display) md:text-3xl">
-              <p>“{quote.text}”</p>
+              <p>“{settings.quoteText}”</p>
               <footer className="text-gold-300 mt-6 text-sm tracking-[0.16em] uppercase">
-                <cite className="not-italic">— {quote.attribution}</cite>
+                <cite className="not-italic">
+                  — {settings.quoteAttribution}
+                </cite>
               </footer>
             </blockquote>
           </Reveal>

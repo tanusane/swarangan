@@ -12,9 +12,8 @@ import {
 import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Section } from "@/components/ui/section";
-import { featuredVideos } from "@/content/social";
+import { getSettings, getVideos } from "@/lib/cms/repository";
 import { latestChannelUploads } from "@/lib/youtube-feed";
-import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
   title: "Social Presence",
@@ -28,6 +27,10 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function SocialPage() {
+  const [featuredVideos, settings] = await Promise.all([
+    getVideos(),
+    getSettings(),
+  ]);
   const featured = featuredVideos.filter((video) => video.featured);
   const archive = featuredVideos.filter((video) => !video.featured);
 
@@ -75,17 +78,17 @@ export default async function SocialPage() {
 
         <Reveal delay={0.2}>
           <div className="mt-12 flex flex-wrap gap-3">
-            <ButtonLink href={siteConfig.social.youtube} variant="primary">
+            <ButtonLink href={settings.youtube} variant="primary">
               <YouTubeIcon className="size-5" />
               Visit our YouTube channel
               <ExternalLink aria-hidden="true" className="size-4" />
             </ButtonLink>
-            <ButtonLink href={siteConfig.social.instagram} variant="secondary">
+            <ButtonLink href={settings.instagram} variant="secondary">
               <InstagramIcon className="size-5" />
               Follow on Instagram
               <ExternalLink aria-hidden="true" className="size-4" />
             </ButtonLink>
-            <ButtonLink href={siteConfig.social.facebook} variant="secondary">
+            <ButtonLink href={settings.facebook} variant="secondary">
               <FacebookIcon className="size-5" />
               Follow on Facebook
               <ExternalLink aria-hidden="true" className="size-4" />
@@ -151,7 +154,7 @@ export default async function SocialPage() {
             <p className="text-ink-muted max-w-xl text-lg">
               Follow{" "}
               <a
-                href={siteConfig.social.instagram}
+                href={settings.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-magenta-700 font-medium underline-offset-4 hover:underline"
@@ -160,7 +163,7 @@ export default async function SocialPage() {
               </a>{" "}
               for the latest from Swarangan.
             </p>
-            <ButtonLink href={siteConfig.social.instagram} size="lg">
+            <ButtonLink href={settings.instagram} size="lg">
               <InstagramIcon className="size-5" />
               Open Instagram
               <ExternalLink aria-hidden="true" className="size-4" />

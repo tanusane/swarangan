@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { Reveal } from "@/components/ui/reveal";
 import { Section, SwarDivider } from "@/components/ui/section";
 import { TiltCard } from "@/components/ui/tilt-card";
-import { testimonials } from "@/content/testimonials";
+import { getTestimonials } from "@/lib/cms/repository";
 
 export const metadata: Metadata = {
   title: "Testimonials",
@@ -23,7 +23,9 @@ export const metadata: Metadata = {
  * as they appear in the content seed. Nothing is truncated, reordered or
  * "tidied" — see the note in src/content/testimonials.ts.
  */
-export default function TestimonialsPage() {
+export default async function TestimonialsPage() {
+  const testimonials = await getTestimonials();
+
   return (
     <>
       <BreadcrumbSchema
@@ -56,8 +58,8 @@ export default function TestimonialsPage() {
                 />
                 <blockquote className="flex flex-1 flex-col">
                   <div className="text-ink-muted flex-1 space-y-4">
-                    {testimonial.body.map((paragraph) => (
-                      <p key={paragraph.slice(0, 40)}>{paragraph}</p>
+                    {testimonial.body.map((paragraph, p) => (
+                      <p key={`${testimonial.key}-${p}`}>{paragraph}</p>
                     ))}
                   </div>
                   <footer className="border-sand-300 mt-7 border-t pt-5">

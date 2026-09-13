@@ -1,7 +1,7 @@
 import { uiIcons } from "@/components/ui/icons";
 import { Reveal } from "@/components/ui/reveal";
 import { TiltCard } from "@/components/ui/tilt-card";
-import { classOfferings, classesNote, locationOptions } from "@/content/home";
+import type { ClassOffering, LocationOption } from "@/content/types";
 
 /**
  * The class-offering and location card grids.
@@ -21,16 +21,19 @@ const CARD =
   "flex h-full flex-col rounded-(--radius-card) border border-sand-300 p-7";
 
 export function ClassOfferingsGrid({
+  offerings,
+  note,
   headingLevel: Heading = "h3",
-  showNote = true,
 }: {
+  offerings: readonly ClassOffering[];
+  /** Shown beneath the cards, e.g. "*Individual and group classes available." */
+  note?: string;
   headingLevel?: HeadingLevel;
-  showNote?: boolean;
 }) {
   return (
     <>
       <ul className="grid gap-6 md:grid-cols-3">
-        {classOfferings.map((offering, i) => (
+        {offerings.map((offering, i) => (
           <Reveal key={offering.key} as="li" variant="leaf" delay={i * 0.08}>
             <TiltCard
               className={`${CARD} bg-sand-100 hover:shadow-(--shadow-lift-lg)`}
@@ -48,9 +51,9 @@ export function ClassOfferingsGrid({
         ))}
       </ul>
 
-      {showNote && (
+      {note && (
         <Reveal delay={0.2}>
-          <p className="text-ink-muted mt-8 text-sm italic">{classesNote}</p>
+          <p className="text-ink-muted mt-8 text-sm italic">{note}</p>
         </Reveal>
       )}
     </>
@@ -58,13 +61,15 @@ export function ClassOfferingsGrid({
 }
 
 export function LocationsGrid({
+  locations,
   headingLevel: Heading = "h3",
 }: {
+  locations: readonly LocationOption[];
   headingLevel?: HeadingLevel;
 }) {
   return (
     <ul className="grid gap-6 md:grid-cols-3">
-      {locationOptions.map((option, i) => {
+      {locations.map((option, i) => {
         const Icon = uiIcons[option.icon];
         return (
           <Reveal key={option.key} as="li" delay={i * 0.08}>

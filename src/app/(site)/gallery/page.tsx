@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { PhotoGrid } from "@/components/gallery/photo-grid";
 import { PageHeader } from "@/components/ui/page-header";
 import { BreadcrumbSchema } from "@/components/seo/structured-data";
-import { galleryAlbums, galleryPhotos } from "@/content/gallery";
+import { getGallery } from "@/lib/cms/repository";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -12,7 +12,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/gallery" },
 };
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const { albums, photos } = await getGallery();
+
   return (
     <>
       <BreadcrumbSchema
@@ -31,7 +33,7 @@ export default function GalleryPage() {
 
       <section className="py-(--spacing-section)">
         <div className="container-swar">
-          <PhotoGrid albums={galleryAlbums} photos={galleryPhotos} />
+          <PhotoGrid albums={albums} photos={photos} />
         </div>
       </section>
     </>

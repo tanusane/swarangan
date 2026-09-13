@@ -1,5 +1,6 @@
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { whatsappHref } from "@/lib/site-config";
+import { getSettings } from "@/lib/cms/repository";
+import { whatsappHrefFor } from "@/lib/cms/settings";
 
 /**
  * Floating WhatsApp action, mobile only.
@@ -10,10 +11,11 @@ import { whatsappHref } from "@/lib/site-config";
  * Sits above the left drone line and clear of the Phase 4 Swarangan.AI launcher,
  * which takes the bottom-right corner.
  */
-export function WhatsAppFab() {
+export async function WhatsAppFab() {
+  const settings = await getSettings();
   return (
     <a
-      href={whatsappHref()}
+      href={whatsappHrefFor(settings)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Message Swarangan on WhatsApp"

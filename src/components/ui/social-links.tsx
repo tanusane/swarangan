@@ -4,34 +4,37 @@ import {
   WhatsAppIcon,
   YouTubeIcon,
 } from "@/components/ui/icons";
-import { siteConfig, whatsappHref } from "@/lib/site-config";
+import { whatsappHrefFor, type SiteSettings } from "@/lib/cms/settings";
+import { siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 /**
  * The social icons — one list, used in the footer, on the contact page and on
- * Social Presence. Adding a platform here puts it in every place at once, so the
- * pages can never disagree about where Swarangan can be found.
+ * Social Presence. The URLs come from the admin-editable site settings, so
+ * changing a profile link in the admin updates every page at once.
  */
-export const SOCIAL_PROFILES = [
-  {
-    key: "instagram",
-    label: "Instagram",
-    href: siteConfig.social.instagram,
-    Icon: InstagramIcon,
-  },
-  {
-    key: "youtube",
-    label: "YouTube",
-    href: siteConfig.social.youtube,
-    Icon: YouTubeIcon,
-  },
-  {
-    key: "facebook",
-    label: "Facebook",
-    href: siteConfig.social.facebook,
-    Icon: FacebookIcon,
-  },
-] as const;
+export function socialProfiles(settings: SiteSettings) {
+  return [
+    {
+      key: "instagram",
+      label: "Instagram",
+      href: settings.instagram,
+      Icon: InstagramIcon,
+    },
+    {
+      key: "youtube",
+      label: "YouTube",
+      href: settings.youtube,
+      Icon: YouTubeIcon,
+    },
+    {
+      key: "facebook",
+      label: "Facebook",
+      href: settings.facebook,
+      Icon: FacebookIcon,
+    },
+  ] as const;
+}
 
 const TONES = {
   /** On the deep-blue footer. */
@@ -45,17 +48,19 @@ const BASE =
   "inline-flex size-10 items-center justify-center rounded-full border transition-colors";
 
 export function SocialLinks({
+  settings,
   tone = "light",
   includeWhatsApp = true,
   className,
 }: {
+  settings: SiteSettings;
   tone?: keyof typeof TONES;
   includeWhatsApp?: boolean;
   className?: string;
 }) {
   return (
     <ul className={cn("flex flex-wrap gap-2", className)}>
-      {SOCIAL_PROFILES.map(({ key, label, href, Icon }) => (
+      {socialProfiles(settings).map(({ key, label, href, Icon }) => (
         <li key={key}>
           <a
             href={href}
@@ -71,7 +76,7 @@ export function SocialLinks({
       {includeWhatsApp && (
         <li>
           <a
-            href={whatsappHref()}
+            href={whatsappHrefFor(settings)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Message Swarangan on WhatsApp"

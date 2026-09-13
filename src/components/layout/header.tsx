@@ -9,16 +9,16 @@ import { BrandLogo } from "@/components/ui/brand-logo";
 import { ButtonLink } from "@/components/ui/button";
 import { useScrolledPast } from "@/lib/use-external-state";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import {
-  navigation,
-  siteConfig,
-  telHref,
-  whatsappHref,
-} from "@/lib/site-config";
+import { useSiteSettings } from "@/components/providers/site-settings";
+import { telHrefFor, whatsappHrefFor } from "@/lib/cms/settings";
+import { navigation, siteConfig } from "@/lib/site-config";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const pathname = usePathname();
+  const settings = useSiteSettings();
+  const telHref = telHrefFor(settings);
+  const whatsapp = whatsappHrefFor(settings);
   const [open, setOpen] = useState(false);
 
   /* The header sits over the hero photograph, so it starts transparent and only
@@ -122,10 +122,10 @@ export function Header() {
             )}
           >
             <Phone aria-hidden="true" className="size-4" />
-            {siteConfig.contact.phoneDisplay}
+            {settings.phoneDisplay}
           </a>
           <ButtonLink
-            href={whatsappHref()}
+            href={whatsapp}
             variant="whatsapp"
             size="sm"
             aria-label="Message Swarangan on WhatsApp"
@@ -192,13 +192,13 @@ export function Header() {
           </ul>
 
           <div className="mt-6 flex flex-col gap-3">
-            <ButtonLink href={whatsappHref()} variant="whatsapp">
+            <ButtonLink href={whatsapp} variant="whatsapp">
               <WhatsAppIcon className="size-4" />
               Message us on WhatsApp
             </ButtonLink>
             <ButtonLink href={telHref} variant="secondary">
               <Phone aria-hidden="true" className="size-4" />
-              {siteConfig.contact.phoneDisplay}
+              {settings.phoneDisplay}
             </ButtonLink>
           </div>
         </nav>
