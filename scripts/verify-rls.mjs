@@ -5,22 +5,21 @@
  * the public (publishable) key that ships to every browser — and fails if
  * anything private can be read or anything at all can be written.
  *
- * Run after applying the migration, and again after any policy change:
- *
  *   npm run verify:rls
  *
- * Reads NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY from
- * .env.local. It never uses the secret key: the whole point is to see the
- * database the way an attacker holding the public key sees it.
- *
- * Note on how RLS denies a read: a SELECT on a table the caller cannot see
- * returns ZERO ROWS, not an error. So "no rows came back" is the pass
- * condition for reads, and this script seeds nothing — run it against a
- * database that actually contains data (e.g. after the first enquiry) for the
- * read checks to be meaningful. Write checks are meaningful immediately.
+ * HOW IT AVOIDS FALSE PASSES
+ *   - Reads are tested against real data. A SELECT on a hidden table returns
+ *     zero rows rather than an error, so "no rows came back" proves nothing on
+ *     an empty table. The script therefore plants clearly-labelled canary rows
+ *     with the SECRET key, tries to read them with the PUBLIC key, and deletes
+ *     them afterwards. The secret key is used only to plant and remove canaries;
+ *     every check itself uses the public key alone.
+ *   - A write only passes if Postgres refused it for row-level security
+ *     (error 42501). Any other error — above all "table does not exist", which
+ *     is what a failed migration looks like — is a FAIL, not a pass.
  */
 import { createClient } from "@supabase/supabase-js";
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 // ---- Load .env.local without adding a dependency ---------------------------
 if (existsSync(".env.local")) {
@@ -34,18 +33,20 @@ if (existsSync(".env.local")) {
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const secretKey = process.env.SUPABASE_SECRET_KEY;
 
-if (!url || !publishableKey) {
+if (!url || !publishableKey || !secretKey) {
   console.error(
-    "Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in .env.local first.",
+    "Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY and SUPABASE_SECRET_KEY in .env.local first.",
   );
   process.exit(2);
 }
 
-const anon = createClient(url, publishableKey, {
-  auth: { persistSession: false, autoRefreshToken: false },
-});
+const options = { auth: { persistSession: false, autoRefreshToken: false } };
+const anon = createClient(url, publishableKey, options);
+const planter = createClient(url, secretKey, options);
 
+const MARK = `rls-canary-${Date.now()}`;
 let failures = 0;
 const pass = (msg) => console.log(`  PASS  ${msg}`);
 const fail = (msg) => {
@@ -53,80 +54,149 @@ const fail = (msg) => {
   console.log(`  FAIL  ${msg}`);
 };
 
+const isRlsRefusal = (error) =>
+  error?.code === "42501" || /row-level security/i.test(error?.message ?? "");
+
+// ---- 0. Plant canaries ------------------------------------------------------
+console.log("\nPlanting canary rows (secret key)");
+const cleanup = [];
+
+async function plant(table, row, idColumn = "id") {
+  const { data, error } = await planter
+    .from(table)
+    .insert(row)
+    .select(idColumn)
+    .single();
+  if (error) {
+    fail(
+      `${table}: could not plant a canary (${error.code}: ${error.message}) — has the migration run?`,
+    );
+    return false;
+  }
+  cleanup.push({ table, idColumn, id: data[idColumn] });
+  pass(`${table}: canary planted`);
+  return true;
+}
+
+await plant("students", {
+  name: MARK,
+  category: "advanced",
+  level: "canary",
+  mode: "online",
+});
+await plant("enquiries", {
+  name: MARK,
+  email: "canary@example.com",
+  message: MARK,
+});
+await plant("login_attempts", {
+  key_hash: MARK,
+  key_kind: "ip",
+  outcome: "failure",
+});
+await plant("admin_audit_log", { action: MARK, detail: {} });
+await plant("testimonials", { author: MARK, body: [MARK], published: false });
+await plant("fee_plans", {
+  title: MARK,
+  price: "0",
+  cadence: MARK,
+  published: false,
+});
+await plant("social_links", {
+  platform: "youtube",
+  embed_ref: MARK,
+  title: MARK,
+  enabled: false,
+});
+await plant("bot_knowledge", {
+  patterns: [MARK],
+  answer: MARK,
+  enabled: false,
+});
+
 // ---- 1. Private tables must be unreadable ----------------------------------
-console.log("\nPrivate tables are unreadable anonymously");
-for (const table of [
-  "students",
-  "enquiries",
-  "login_attempts",
-  "admin_audit_log",
-  "admins",
-  "system_heartbeat",
+console.log("\nPrivate tables are unreadable with the public key");
+for (const [table, column] of [
+  ["students", "name"],
+  ["enquiries", "name"],
+  ["login_attempts", "key_hash"],
+  ["admin_audit_log", "action"],
 ]) {
+  const { data, error } = await anon.from(table).select("*").eq(column, MARK);
+  if (error && !isRlsRefusal(error))
+    fail(`${table}: unexpected error (${error.code}: ${error.message})`);
+  else if ((data ?? []).length === 0) pass(`${table}: canary is invisible`);
+  else fail(`${table}: CANARY IS READABLE by the public key`);
+}
+
+for (const table of ["admins", "system_heartbeat"]) {
   const { data, error } = await anon.from(table).select("*").limit(1);
-  if (error) pass(`${table}: refused (${error.code ?? error.message})`);
-  else if ((data ?? []).length === 0) pass(`${table}: no rows visible`);
-  else fail(`${table}: ${data.length} row(s) READABLE by the public key`);
+  if (error && !isRlsRefusal(error))
+    fail(`${table}: unexpected error (${error.code}: ${error.message})`);
+  else if ((data ?? []).length === 0) pass(`${table}: nothing visible`);
+  else fail(`${table}: ROWS ARE READABLE by the public key`);
 }
 
 // ---- 2. Unpublished content must stay hidden -------------------------------
-console.log("\nUnpublished content is hidden");
+console.log("\nUnpublished content is hidden from the public key");
 for (const [table, column] of [
-  ["testimonials", "published"],
-  ["content_blocks", "published"],
-  ["gallery_photos", "published"],
-  ["fee_plans", "published"],
-  ["social_links", "enabled"],
-  ["bot_knowledge", "enabled"],
+  ["testimonials", "author"],
+  ["fee_plans", "title"],
+  ["social_links", "title"],
+  ["bot_knowledge", "answer"],
 ]) {
-  const { data, error } = await anon
-    .from(table)
-    .select(column)
-    .eq(column, false)
-    .limit(1);
-  if (error) fail(`${table}: unexpected error reading (${error.message})`);
-  else if ((data ?? []).length === 0) pass(`${table}: no hidden rows exposed`);
-  else fail(`${table}: HIDDEN rows are readable`);
+  const { data, error } = await anon.from(table).select("*").eq(column, MARK);
+  if (error)
+    fail(`${table}: unexpected error (${error.code}: ${error.message})`);
+  else if ((data ?? []).length === 0)
+    pass(`${table}: unpublished canary is hidden`);
+  else fail(`${table}: UNPUBLISHED CANARY IS READABLE`);
 }
 
 // ---- 3. Nothing may be written anonymously ---------------------------------
-console.log("\nNothing is writable anonymously");
+console.log("\nNothing is writable with the public key");
 const probes = {
-  enquiries: {
-    name: "RLS probe",
-    email: "probe@example.com",
-    message: "rls verification probe",
-  },
-  testimonials: { author: "RLS probe", body: ["probe"] },
-  students: {
-    name: "RLS probe",
-    category: "advanced",
-    level: "1",
-    mode: "online",
-  },
+  enquiries: { name: MARK, email: "probe@example.com", message: MARK },
+  testimonials: { author: MARK, body: [MARK] },
+  students: { name: MARK, category: "advanced", level: "1", mode: "online" },
   site_settings: { id: 1, data: { hijacked: true } },
-  login_attempts: {
-    key_hash: "probe",
-    key_kind: "ip",
-    outcome: "success",
-  },
+  login_attempts: { key_hash: MARK, key_kind: "ip", outcome: "success" },
   admins: { user_id: "00000000-0000-0000-0000-000000000000" },
+  media_slots: { key: MARK, storage_path: "x", alt: "probe" },
 };
 
 for (const [table, row] of Object.entries(probes)) {
   const { error } = await anon.from(table).insert(row);
-  if (error) pass(`${table}: insert refused`);
-  else fail(`${table}: ANONYMOUS INSERT SUCCEEDED — delete the probe row now`);
+  if (isRlsRefusal(error))
+    pass(`${table}: insert refused by row-level security`);
+  else if (error)
+    fail(
+      `${table}: insert failed for the WRONG reason (${error.code}: ${error.message})`,
+    );
+  else fail(`${table}: ANONYMOUS INSERT SUCCEEDED`);
 }
 
-const { error: updateError, data: updated } = await anon
-  .from("site_settings")
-  .update({ data: { hijacked: true } })
-  .eq("id", 1)
+// An UPDATE that RLS hides simply matches no rows; that is the pass condition.
+const { data: updated, error: updateError } = await anon
+  .from("testimonials")
+  .update({ author: "hijacked" })
+  .eq("author", MARK)
   .select();
-if (updateError || (updated ?? []).length === 0)
-  pass("site_settings: update refused");
-else fail("site_settings: ANONYMOUS UPDATE SUCCEEDED");
+if (updateError && !isRlsRefusal(updateError))
+  fail(`testimonials update: unexpected error (${updateError.message})`);
+else if ((updated ?? []).length === 0)
+  pass("testimonials: update matched nothing");
+else fail("testimonials: ANONYMOUS UPDATE SUCCEEDED");
+
+const { data: deleted, error: deleteError } = await anon
+  .from("students")
+  .delete()
+  .eq("name", MARK)
+  .select();
+if (deleteError && !isRlsRefusal(deleteError))
+  fail(`students delete: unexpected error (${deleteError.message})`);
+else if ((deleted ?? []).length === 0) pass("students: delete matched nothing");
+else fail("students: ANONYMOUS DELETE SUCCEEDED");
 
 // ---- 4. The admin check must say no ----------------------------------------
 console.log("\nThe admin allow-list rejects the public key");
@@ -137,13 +207,57 @@ else fail("is_admin() returned TRUE for an anonymous caller");
 
 // ---- 5. Storage writes must be refused -------------------------------------
 console.log("\nMedia storage refuses anonymous uploads");
+// A genuine 1x1 PNG with an explicit image type, so the bucket's file-type
+// filter lets it through and the security policy is what actually decides.
+const PNG_1PX = Uint8Array.from(
+  atob(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+  ),
+  (c) => c.charCodeAt(0),
+);
 const { error: uploadError } = await anon.storage
   .from("media")
-  .upload(`rls-probe-${Date.now()}.txt`, new Blob(["probe"]), {
+  .upload(`${MARK}.png`, new Blob([PNG_1PX], { type: "image/png" }), {
     contentType: "image/png",
   });
-if (uploadError) pass("media bucket: upload refused");
-else fail("media bucket: ANONYMOUS UPLOAD SUCCEEDED — remove the probe file");
+if (
+  uploadError &&
+  /row-level security|unauthorized|403/i.test(
+    `${uploadError.message} ${uploadError.statusCode ?? ""}`,
+  )
+) {
+  pass("media bucket: upload refused");
+} else if (uploadError) {
+  fail(
+    `media bucket: upload failed for an unexpected reason (${uploadError.message}) — does the bucket exist?`,
+  );
+} else {
+  fail("media bucket: ANONYMOUS UPLOAD SUCCEEDED");
+  await planter.storage.from("media").remove([`${MARK}.png`]);
+}
+
+// ---- 6. Admin account exists -----------------------------------------------
+console.log("\nSetup");
+const { count, error: adminError } = await planter
+  .from("admins")
+  .select("*", { count: "exact", head: true });
+if (adminError) fail(`admins: could not count (${adminError.message})`);
+else if ((count ?? 0) > 0)
+  pass(`admins: ${count} admin account(s) on the allow-list`);
+else
+  fail(
+    "admins: NO ADMIN on the allow-list yet — nobody can sign in (SETUP.md step 4)",
+  );
+
+// ---- Clean up canaries ------------------------------------------------------
+for (const { table, idColumn, id } of cleanup) {
+  const { error } = await planter.from(table).delete().eq(idColumn, id);
+  if (error)
+    console.log(
+      `  WARN  could not remove canary from ${table} (${error.message}) — delete rows marked ${MARK}`,
+    );
+}
+console.log(`\nRemoved ${cleanup.length} canary row(s).`);
 
 console.log(
   failures === 0
