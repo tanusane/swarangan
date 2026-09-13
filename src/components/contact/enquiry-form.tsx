@@ -13,7 +13,7 @@ import {
   enquirySchema,
   type EnquiryInput,
 } from "@/lib/enquiry-schema";
-import { submitEnquiry } from "@/app/contact/actions";
+import { submitEnquiry } from "@/app/(site)/contact/actions";
 
 /**
  * The enquiry form.

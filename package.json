@@ -15,10 +15,13 @@
     "assets": "node scripts/build-brand.mjs && node scripts/build-assets.mjs",
     "palette": "node scripts/build-palette.mjs",
     "duplication": "jscpd src --min-lines 12 --threshold 3 --reporters consoleFull",
-    "verify": "npm run typecheck && npm run lint && npm run test"
+    "verify": "npm run typecheck && npm run lint && npm run test",
+    "verify:rls": "node scripts/verify-rls.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
     "animejs": "^4.5.0",
     "clsx": "^2.1.1",
     "lucide-react": "^1.45.0",
@@ -27,6 +30,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.88.0",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^3.6.0",
     "zod": "^4.6.2"
   },

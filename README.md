@@ -131,12 +131,33 @@ URL.** The DNS cutover is the last step, and it is the only irreversible one.
 
 ## Status
 
-**Phase 1 — public site: complete.** All six pages, the design system, the
-asset pipeline, SEO and 38 tests.
+**Phase 1 — public site: complete.**
 
-Still to come: **Phase 2** Supabase + the admin CMS; **Phase 3** the student
-roster, dashboard and database backup; **Phase 4** the Swarangan.AI assistant
-and a final performance and accessibility pass.
+**Phase 2 — in progress.** The security core is built: the full database schema
+with row-level security on every table, the hardened admin sign-in, the admin
+shell, and the two-cron keepalive. Setting it up is in [SETUP.md](SETUP.md).
+Next: the content editors, so the site's copy, photos and videos become
+editable.
+
+Still to come: **Phase 3** the student roster, dashboard and database backup;
+**Phase 4** the Swarangan.AI assistant and a final performance and
+accessibility pass.
+
+### How the admin login resists brute force
+
+- Attempts are throttled on three keys — email+IP, IP, and email alone — each
+  with its own threshold, so one attacker cannot spray guesses, and cannot lock
+  the real admin out either. The policy is a pure, unit-tested function in
+  `src/lib/auth/lockout.ts`; the tests were verified by deliberately breaking
+  each rule and confirming the matching test fails.
+- Every attempt is recorded as pending _before_ the password is checked, which
+  closes the race where parallel guesses all read the same pre-lockout count.
+- Failures all read identically and every response is padded to the same
+  duration, so the form cannot reveal which addresses have accounts.
+- Signing in requires being on the `admins` allow-list, not merely having a
+  Supabase account. The check runs in the Data Access Layer on every admin page
+  and every admin action — `proxy.ts` only does an optimistic redirect.
+- Stored throttle keys are peppered HMACs, never raw emails or IP addresses.
 
 ### Known items
 
