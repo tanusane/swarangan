@@ -16,7 +16,8 @@
       "Bash(git -c core.safecrlf=false commit -q -m ' *)",
       "Bash(sed -i '/^import sharp from \"sharp\";$/d' scripts/build-brand.mjs)",
       "Bash(echo \"exit=$?\")",
-      "Bash(npx next *)"
+      "Bash(npx next *)",
+      "Bash(npm test *)"
     ]
   }
 }
