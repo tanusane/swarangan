@@ -258,6 +258,86 @@ activity log is not written back, and admins are re-added as in step 4.
 
 ---
 
+## 13. Move www.swarangan.sg to the new site
+
+Today the domain is **registered elsewhere**, but its **DNS and the
+info@swarangan.sg mailbox are at HostGator**. When HostGator ends, the old
+website, the DNS and that mailbox all stop together. So the DNS moves to
+Vercel, and email gets a new home first.
+
+Allow up to **48 hours** for DNS changes to take effect everywhere: finish
+steps 1–5 at least two days before the HostGator plan ends.
+
+### Before you start
+
+- The **login for the domain registrar** (the company the domain is registered
+  with — not HostGator).
+- A decision on **info@swarangan.sg**:
+  - _Forward only_ (simplest): mail to info@ lands in an existing Gmail, using a
+    free forwarding service such as ImprovMX.
+  - _A real mailbox_: a free or paid email host such as Zoho Mail or Google
+    Workspace. Check each provider's current free plan.
+- **Old emails worth keeping:** export them from HostGator webmail now, or add
+  the mailbox to Gmail (Settings → Accounts → _Check mail from other accounts_)
+  so Gmail copies them.
+
+### 1. Add the domain in Vercel
+
+1. Vercel project → **Settings → Domains → Add** → `www.swarangan.sg`.
+2. Add `swarangan.sg` too, and choose **Redirect to www.swarangan.sg**.
+3. When Vercel offers a choice, pick the **Nameservers** method. Note the two
+   nameservers it shows (usually `ns1.vercel-dns.com` and `ns2.vercel-dns.com`).
+
+### 2. Recreate the email records in Vercel DNS — before switching
+
+Vercel team → **Domains → swarangan.sg → DNS Records**. Add:
+
+- The **MX** records (and SPF **TXT** record) your chosen email service gives
+  you, so info@ keeps receiving mail after the switch.
+- **Resend:** resend.com → **Domains → Add domain** → `swarangan.sg`. Add each
+  record it lists (a DKIM TXT on `resend._domainkey`, and MX + TXT records on
+  `send`). They do not clash with the email records above.
+
+The website's own records are created by Vercel automatically.
+
+### 3. Switch the nameservers
+
+At the **domain registrar**, replace HostGator's nameservers
+(`ns8343.hostgator.com`, `ns8344.hostgator.com`) with Vercel's. Save.
+
+### 4. Wait, then check
+
+- Vercel → Domains shows **Valid Configuration** and issues the HTTPS
+  certificate by itself.
+- https://www.swarangan.sg opens the new site; https://swarangan.sg redirects
+  to it.
+- Send a test email to info@swarangan.sg from another account and confirm it
+  arrives.
+- Resend → Domains shows **swarangan.sg: Verified** (click _Verify_ if needed).
+
+### 5. Point everything at the real address
+
+| Where                                         | Change                                                                                                                             |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Vercel → Environment Variables                | `NEXT_PUBLIC_SITE_URL` = `https://www.swarangan.sg`, then **Redeploy**                                                             |
+| Vercel → Environment Variables                | `RESEND_FROM` = `Swarangan <enquiries@swarangan.sg>`; `ENQUIRY_NOTIFY_TO` = whichever inbox should receive enquiries; **Redeploy** |
+| GitHub → Secrets → Actions                    | `SITE_URL` = `https://www.swarangan.sg`; run the keepalive workflow once                                                           |
+| Supabase → Authentication → URL Configuration | Site URL `https://www.swarangan.sg`; keep the `/admin/auth/confirm` redirect URL for www                                           |
+| Supabase → Authentication → Emails → SMTP     | Sender email `enquiries@swarangan.sg`                                                                                              |
+| `.env.local`                                  | Same `RESEND_FROM` and `ENQUIRY_NOTIFY_TO` as Vercel                                                                               |
+
+Then test once more: an enquiry (the inbox receives it **and** the visitor
+gets a thank-you), a password reset, and the dashboard keepalive status.
+
+### 6. Afterwards
+
+- Do step 10: Google Business Profile, Search Console (submit the sitemap),
+  Bing Webmaster Tools, and `npm run indexnow`.
+- **Let HostGator lapse only after** the site, info@ email and enquiry emails
+  are all confirmed working on the new setup.
+
+---
+
 ## If something goes wrong
 
 **"The admin panel has not been set up yet"** — one of the five environment
