@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Swarangan — Setup Guide</title>
+<style>
+  :root {
+    --magenta: #a02f6c; --magenta-dk: #811553; --magenta-soft: #fbe2ec;
+    --blue: #054b96; --blue-dk: #003977; --ivory: #fdfbf7; --sand: #f2e9dd;
+    --line: #e6d9c7; --ink: #221b14; --muted: #5c4936; --ok: #1f7a4d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ivory); color: var(--ink);
+    font: 16px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  header { background: var(--blue-dk); color: var(--ivory); padding: 40px 20px 32px; }
+  header .wrap, main { max-width: 760px; margin: 0 auto; }
+  header p { margin: 4px 0 0; color: #f2e9dd; }
+  h1 { margin: 0; font: 400 2.1rem/1.15 Georgia, serif; }
+  h2 { font: 400 1.35rem/1.25 Georgia, serif; color: var(--blue-dk); margin: 0; }
+  main { padding: 28px 20px 80px; }
+  .progress { position: sticky; top: 0; z-index: 2; background: var(--ivory);
+    padding: 12px 0; border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+  .bar { height: 8px; background: var(--sand); border-radius: 99px; overflow: hidden; }
+  .bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--magenta), var(--blue)); transition: width .3s; }
+  .progress small { color: var(--muted); }
+  .note { background: var(--sand); border-left: 4px solid var(--blue); padding: 12px 16px; border-radius: 6px; margin: 16px 0; }
+  .warn { background: var(--magenta-soft); border-left-color: var(--magenta); }
+  .step { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px 22px; margin: 18px 0; }
+  .step.done { border-color: #b9dcc8; background: #f6fbf8; }
+  .step-head { display: flex; gap: 14px; align-items: center; margin-bottom: 10px; }
+  .num { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--magenta); color: #fff; font-weight: 600; }
+  .step.done .num { background: var(--ok); }
+  ol, ul { padding-left: 22px; } li { margin: 6px 0; }
+  code { background: var(--sand); padding: 1px 6px; border-radius: 4px; font-size: .92em; }
+  pre { background: #1d1a17; color: #f2e9dd; padding: 14px 16px; border-radius: 8px; overflow-x: auto; position: relative; }
+  pre code { background: none; padding: 0; color: inherit; }
+  .copy { position: absolute; top: 8px; right: 8px; font: 12px system-ui; border: 0; border-radius: 5px;
+    padding: 4px 9px; background: var(--magenta); color: #fff; cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: .95rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  label.check { display: inline-flex; gap: 8px; align-items: center; margin-top: 10px; font-weight: 600; color: var(--blue-dk); cursor: pointer; }
+  label.check input { width: 18px; height: 18px; accent-color: var(--ok); }
+  details { margin-top: 28px; } summary { cursor: pointer; font-weight: 600; color: var(--blue-dk); }
+  a { color: var(--magenta-dk); }
+  @media print {
+    .progress, .copy, label.check { display: none; }
+    header { background: none; color: var(--ink); padding: 0 0 12px; }
+    header p { color: var(--muted); }
+    .step { break-inside: avoid; }
+    pre { background: #f2e9dd; color: var(--ink); }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>Swarangan — Setup Guide</h1>
+    <p>Switches on the admin panel, the database and the keepalive. About 30 minutes, once. Every service is free — no card needed.</p>
+  </div>
+</header>
+
+<main>
+  <div class="progress">
+    <div class="bar"><span id="bar"></span></div>
+    <small id="count">0 of 9 steps done</small>
+  </div>
+
+  <div class="note">
+    <strong>The public website already works without any of this.</strong>
+    These steps only turn on the admin panel. Do them in order, and do
+    <strong>step 3 before sharing the site's link anywhere</strong>.
+  </div>
+
+  <section class="step" data-step="1">
+    <div class="step-head"><span class="num">1</span><h2>Create the Supabase project</h2></div>
+    <ol>
+      <li>Sign up at <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a> and click <strong>New project</strong>.</li>
+      <li><strong>Region:</strong> Southeast Asia (Singapore).</li>
+      <li><strong>Database password:</strong> click Generate, then save it in a password manager. It cannot be recovered.</li>
+      <li>Wait a minute or two for it to finish.</li>
+    </ol>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="2">
+    <div class="step-head"><span class="num">2</span><h2>Create the database</h2></div>
+    <ol>
+      <li>In Supabase, open <strong>SQL Editor → New query</strong>.</li>
+      <li>Open this file from the project folder, copy <em>all</em> of it, and paste it in:<br>
+        <code>supabase/migrations/20260913000001_init.sql</code></li>
+      <li>Click <strong>Run</strong>. You should see <em>"Success. No rows returned"</em>.</li>
+    </ol>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="3">
+    <div class="step-head"><span class="num">3</span><h2>Turn off public sign-ups</h2></div>
+    <div class="note warn"><strong>Do not skip this.</strong> Otherwise anyone who finds the database address could create an account.</div>
+    <ol>
+      <li><strong>Authentication → Sign In / Providers</strong>.</li>
+      <li>Switch <strong>off</strong> "Allow new users to sign up". Save.</li>
+    </ol>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="4">
+    <div class="step-head"><span class="num">4</span><h2>Create the admin account</h2></div>
+    <ol>
+      <li><strong>Authentication → Users → Add user → Create new user</strong>.</li>
+      <li>Enter the admin's email and a strong password. Tick <strong>Auto Confirm User</strong>. Create.</li>
+      <li>In the users list, copy that user's <strong>UID</strong>.</li>
+      <li>Go back to <strong>SQL Editor</strong>, paste this, replace the placeholder with the UID, and Run:</li>
+    </ol>
+<pre><code>insert into public.admins (user_id) values ('PASTE-THE-UID-HERE');</code></pre>
+    <p>Only people added this way can sign in to the admin panel — even with the right password. Repeat for anyone else who needs access.</p>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="5">
+    <div class="step-head"><span class="num">5</span><h2>Collect the keys</h2></div>
+    <p>In Supabase: <strong>Project Settings → API Keys</strong>.</p>
+    <table>
+      <tr><th>Copy this</th><th>It is called</th></tr>
+      <tr><td>Project URL</td><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td></tr>
+      <tr><td>Publishable key (starts <code>sb_publishable_</code>)</td><td><code>NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code></td></tr>
+      <tr><td>Secret key (starts <code>sb_secret_</code>)</td><td><code>SUPABASE_SECRET_KEY</code></td></tr>
+    </table>
+    <div class="note warn"><strong>The secret key unlocks everything in the database.</strong> Never email it, paste it into a chat, or share a screenshot of it.</div>
+    <p>You also need two random secrets. In a terminal in the project folder, run this <strong>twice</strong> and keep both results:</p>
+<pre><code>node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"</code></pre>
+    <p>The first is <code>AUTH_THROTTLE_PEPPER</code>, the second is <code>CRON_SECRET</code>.</p>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="6">
+    <div class="step-head"><span class="num">6</span><h2>Try it on your computer</h2></div>
+    <ol>
+      <li>In the project folder, copy <code>.env.example</code> and name the copy <code>.env.local</code>.</li>
+      <li>Fill in the five values from step 5.</li>
+      <li>Run:</li>
+    </ol>
+<pre><code>npm run dev</code></pre>
+    <p>Open <a href="http://localhost:3000/admin">localhost:3000/admin</a> and sign in with the admin account.</p>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="7">
+    <div class="step-head"><span class="num">7</span><h2>Check the security rules</h2></div>
+    <p>This tries to break into the database the way a stranger could, and reports anything it gets through:</p>
+<pre><code>npm run verify:rls</code></pre>
+    <p><strong>Every line must say PASS.</strong> If any says FAIL, stop and don't publish until it's fixed.</p>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="8">
+    <div class="step-head"><span class="num">8</span><h2>Put it live on Vercel</h2></div>
+    <ol>
+      <li>In the Vercel project: <strong>Settings → Environment Variables</strong>.</li>
+      <li>Add the five values from step 5, plus <code>NEXT_PUBLIC_SITE_URL</code> = <code>https://www.swarangan.sg</code>. Choose <strong>Production</strong>.</li>
+      <li>Go to <strong>Deployments</strong> and redeploy the latest one.</li>
+    </ol>
+    <p>The daily database ping starts on its own after this.</p>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <section class="step" data-step="9">
+    <div class="step-head"><span class="num">9</span><h2>Add the backup ping on GitHub</h2></div>
+    <p>The free database <strong>pauses after about a week with no activity</strong>, and waking it is a manual click. Visiting the website does not count. Two separate daily pings stop this from happening.</p>
+    <ol>
+      <li>In the GitHub repository: <strong>Settings → Secrets and variables → Actions → New repository secret</strong>.</li>
+      <li>Add <code>SITE_URL</code> = <code>https://www.swarangan.sg</code></li>
+      <li>Add <code>CRON_SECRET</code> = the same value you gave Vercel.</li>
+      <li><strong>Actions → Supabase keepalive → Run workflow</strong> to test it now.</li>
+    </ol>
+    <p>The admin dashboard shows when the last ping arrived and warns if one is missed.</p>
+    <label class="check"><input type="checkbox"> Done</label>
+  </section>
+
+  <details>
+    <summary>If something goes wrong</summary>
+    <table>
+      <tr><th>You see</th><th>What to do</th></tr>
+      <tr><td>"The admin panel has not been set up yet"</td><td>One of the five values is missing. Re-check step 5 and step 6 (or step 8 on Vercel).</td></tr>
+      <tr><td>"Too many attempts"</td><td>The break-in protection switched on. Wait — it unlocks by itself (1 minute at first, never more than 15). A successful sign-in resets it.</td></tr>
+      <tr><td>Right password but "Invalid email or password"</td><td>That account isn't on the admin list. Re-do step 4.</td></tr>
+      <tr><td>The database was paused anyway</td><td>Supabase → the project → <strong>Restore</strong>. Then check the keepalive box on the admin dashboard to see which ping stopped.</td></tr>
+    </table>
+  </details>
+</main>
+
+<script>
+  // Progress is remembered in this browser only. Nothing is sent anywhere.
+  (function () {
+    var KEY = "swarangan-setup-progress";
+    var steps = Array.prototype.slice.call(document.querySelectorAll(".step"));
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+
+    function render() {
+      var done = steps.filter(function (s) { return s.querySelector("input").checked; }).length;
+      document.getElementById("bar").style.width = (done / steps.length * 100) + "%";
+      document.getElementById("count").textContent =
+        done === steps.length ? "All steps done — the admin panel is ready." : done + " of " + steps.length + " steps done";
+    }
+
+    steps.forEach(function (step) {
+      var box = step.querySelector("input");
+      var id = step.getAttribute("data-step");
+      box.checked = !!saved[id];
+      step.classList.toggle("done", box.checked);
+      box.addEventListener("change", function () {
+        saved[id] = box.checked;
+        step.classList.toggle("done", box.checked);
+        try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {}
+        render();
+      });
+    });
+
+    document.querySelectorAll("pre").forEach(function (pre) {
+      var btn = document.createElement("button");
+      btn.className = "copy"; btn.type = "button"; btn.textContent = "Copy";
+      btn.addEventListener("click", function () {
+        var text = pre.querySelector("code").textContent;
+        (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject())
+          .then(function () { btn.textContent = "Copied"; })
+          .catch(function () { btn.textContent = "Select & copy"; })
+          .finally(function () { setTimeout(function () { btn.textContent = "Copy"; }, 1500); });
+      });
+      pre.appendChild(btn);
+    });
+
+    render();
+  })();
+</script>
+</body>
+</html>

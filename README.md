@@ -161,11 +161,6 @@ accessibility pass.
 
 ### Known items
 
-- **The phone number needs confirming.** The legacy site showed two different
-  numbers — `+65 8189 5399` in the header and footer of every page, and
-  `+65 8189 3599` in the body of the Contact page. One is a typo. The
-  site-wide value is used for now; see the `FIXME` in `src/lib/site-config.ts`.
-  It drives the `tel:` link, the WhatsApp link and the structured data.
 - **Fees and batch timings** are built but hidden (`FEES_PUBLISHED` in
   `src/content/fees.ts`). No figures were invented — a wrong fee on a live site
   is worse than none. Phase 2 makes this a toggle in the admin panel.

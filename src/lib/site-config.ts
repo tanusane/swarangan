@@ -10,12 +10,9 @@ import { digitsOnly } from "@/lib/utils";
  */
 
 /**
- * FIXME(amit): the legacy site shows two different phone numbers —
- *   +65 8189 5399  on the header and footer of every page
- *   +65 8189 3599  in the body of the Contact page
- * One is a typo. We use the header/footer value because it appears site-wide,
- * but this MUST be confirmed before launch: it drives the tel: link, the
- * WhatsApp deep link and the LocalBusiness structured data.
+ * Confirmed by Amit (13 Sep 2026): +65 8189 5399.
+ * The legacy Contact page showed "8189 3599" — that was the typo. This one value
+ * drives the tel: link, the WhatsApp deep link and the structured data.
  */
 const PHONE_E164 = "+6581895399";
 
