@@ -20,6 +20,8 @@ interface SectionProps {
   ground?: SectionGround;
   /** Constrain children to a reading measure rather than the full grid. */
   prose?: boolean;
+  /** Centre the heading block, for a section with a single centred feature. */
+  align?: "start" | "center";
   className?: string;
   children: ReactNode;
 }
@@ -45,6 +47,7 @@ export function Section({
   swaraIndex,
   ground = "ivory",
   prose = false,
+  align = "start",
   className,
   children,
 }: SectionProps) {
@@ -59,7 +62,12 @@ export function Section({
       <div className={prose ? "container-prose" : "container-swar"}>
         {(eyebrow || title) && (
           <Reveal className="mb-10 md:mb-14">
-            <div className="flex items-start gap-4">
+            <div
+              className={cn(
+                "flex items-start gap-4",
+                align === "center" && "justify-center text-center",
+              )}
+            >
               {swara && (
                 <span
                   aria-hidden="true"

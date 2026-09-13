@@ -12,7 +12,7 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "assets": "node scripts/build-brand.mjs && node scripts/build-assets.mjs",
+    "assets": "node scripts/build-brand.mjs && node scripts/build-cursors.mjs && node scripts/build-assets.mjs",
     "palette": "node scripts/build-palette.mjs",
     "duplication": "jscpd src --min-lines 12 --threshold 3 --reporters consoleFull",
     "verify": "npm run typecheck && npm run lint && npm run test",

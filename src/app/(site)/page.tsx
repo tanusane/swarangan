@@ -142,37 +142,45 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* -- Affiliations ---------------------------------------------------- */}
+      {/* -- Affiliation ----------------------------------------------------- */}
       <Section
-        id="affiliations"
+        id="affiliation"
         eyebrow={examinationHeading}
         title="Recognised diplomas and certification"
         swaraIndex={8}
+        align="center"
       >
-        <ul className="grid gap-6 md:grid-cols-2">
-          {siteConfig.affiliations.map((affiliation, i) => (
-            <Reveal key={affiliation.name} as="li" delay={i * 0.1}>
-              <div className="border-sand-300 bg-sand-100 flex h-full flex-col gap-5 rounded-(--radius-card) border p-7 sm:flex-row sm:items-center">
-                {affiliation.logo && (
-                  <SwarImage
-                    image={affiliation.logo}
-                    sizes="160px"
-                    className="w-40 shrink-0 rounded-md bg-white object-contain p-1"
-                  />
-                )}
-                <div>
-                  <h3 className="text-lg">{affiliation.name}</h3>
-                  <p className="text-magenta-700 mt-1 text-xs tracking-wide uppercase">
-                    {affiliation.place}
-                  </p>
-                  <p className="text-ink-muted mt-2.5 text-sm">
-                    {affiliation.note}
-                  </p>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </ul>
+        <Reveal variant="leaf">
+          <div className="border-sand-300 bg-sand-100 mx-auto flex max-w-2xl flex-col items-center gap-6 rounded-(--radius-card) border px-8 py-10">
+            <SwarImage
+              image={siteConfig.affiliation.logo}
+              sizes="(min-width: 640px) 320px, 80vw"
+              className="w-full max-w-xs rounded-md bg-white object-contain p-2"
+            />
+            <div>
+              <p className="text-ink-muted text-sm">Affiliated to</p>
+              <h3 className="mt-1 text-2xl">{siteConfig.affiliation.name}</h3>
+              <p className="text-magenta-700 mt-2 text-xs tracking-[0.18em] uppercase">
+                {siteConfig.affiliation.place}
+              </p>
+            </div>
+            <div>
+              <p className="text-ink-muted mb-3 text-sm">
+                Diploma certifications
+              </p>
+              <ul className="flex flex-wrap justify-center gap-2">
+                {siteConfig.affiliation.certifications.map((item) => (
+                  <li
+                    key={item}
+                    className="border-sand-300 rounded-full border bg-white px-4 py-1.5 text-sm text-blue-800"
+                  >
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </Reveal>
       </Section>
     </>
   );

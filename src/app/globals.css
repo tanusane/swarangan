@@ -321,6 +321,67 @@
 }
 
 /* ==========================================================================
+   Tanpura cursor (public site only; built by scripts/build-cursors.mjs)
+
+   Only for a mouse or trackpad — touch screens have no cursor to replace.
+   Each rule is written twice: a plain url() that every browser understands,
+   then image-set() for sharp rendering on high-density screens. A browser that
+   cannot parse the second declaration keeps the first. The hotspot (3 3) is the
+   tip of the neck, where an arrow's tip would be.
+
+   Text fields keep the ordinary text cursor: editing is where precision
+   matters, and a decorative cursor there would only get in the way.
+   ========================================================================== */
+
+@media (pointer: fine) {
+  .tanpura-cursor {
+    cursor:
+      url("/cursors/tanpura.png") 3 3,
+      auto;
+    cursor:
+      image-set(
+          url("/cursors/tanpura.png") 1x,
+          url("/cursors/tanpura@2x.png") 2x
+        )
+        3 3,
+      auto;
+  }
+
+  .tanpura-cursor
+    :is(a, button, summary, select, label[for], [role="button"], [role="tab"]) {
+    cursor:
+      url("/cursors/tanpura-pointer.png") 3 3,
+      pointer;
+    cursor:
+      image-set(
+          url("/cursors/tanpura-pointer.png") 1x,
+          url("/cursors/tanpura-pointer@2x.png") 2x
+        )
+        3 3,
+      pointer;
+  }
+
+  .tanpura-cursor
+    :is(
+      input:not(
+        [type="checkbox"],
+        [type="radio"],
+        [type="range"],
+        [type="submit"],
+        [type="button"]
+      ),
+      textarea,
+      [contenteditable="true"]
+    ) {
+    cursor: text;
+  }
+
+  .tanpura-cursor :is(button:disabled, [aria-disabled="true"]) {
+    cursor: not-allowed;
+  }
+}
+
+/* ==========================================================================
    Keyframes
    ========================================================================== */
 

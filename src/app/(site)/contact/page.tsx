@@ -113,6 +113,8 @@ export default function ContactPage() {
                         <address className="text-ink-muted not-italic">
                           {siteConfig.address.street}, {siteConfig.address.unit}
                           <br />
+                          {siteConfig.address.building}
+                          <br />
                           {siteConfig.address.locality} —{" "}
                           {siteConfig.address.postalCode}
                         </address>

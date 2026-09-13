@@ -14,7 +14,9 @@ export default function SiteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <>
+    // `contents` adds no box, so the wrapper cannot affect layout; the cursor
+    // is an inherited property and still reaches everything inside.
+    <div className="tanpura-cursor contents">
       <a
         href="#main"
         className="focus:bg-magenta-600 sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:px-5 focus:py-3 focus:text-white"
@@ -29,6 +31,6 @@ export default function SiteLayout({
       <main id="main">{children}</main>
       <Footer />
       <WhatsAppFab />
-    </>
+    </div>
   );
 }

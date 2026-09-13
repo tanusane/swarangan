@@ -43,21 +43,21 @@ export const siteConfig = {
   address: {
     street: "52 West Coast Crescent",
     unit: "#07-09",
+    building: "West Bay Condominium",
     locality: "Singapore",
     postalCode: "128036",
     country: "SG",
-    /**
-     * Neighbourhood, as locals search for it. Verified against OpenStreetMap,
-     * which places 52 West Coast Crescent in Clementi West.
-     */
+    /** The neighbourhood, as people in Singapore search for it. */
     neighbourhood: "Clementi West",
     region: "West Region",
     /**
-     * Verified 13 Sep 2026 against OpenStreetMap for 52 West Coast Crescent.
-     * (An earlier estimate was ~700 m out.) Used in structured data, where a
-     * wrong pin actively hurts local search.
+     * Postcode, building and coordinates verified 13 Sep 2026 against OneMap,
+     * the Singapore Land Authority's official address service. (OpenStreetMap
+     * gave a different postcode and was wrong; the old site's 128036 is right.)
+     * The coordinates feed structured data, where a wrong pin hurts local
+     * search.
      */
-    geo: { lat: 1.298694, lng: 103.766358 },
+    geo: { lat: 1.298739, lng: 103.766369 },
   },
 
   /** ACRA business registration, shown in the footer as on the legacy site. */
@@ -71,21 +71,18 @@ export const siteConfig = {
     instagram: "https://www.instagram.com/swarangan.sg/",
   },
 
-  affiliations: [
-    {
-      name: "Bharati Vidyapeeth School of Performing Arts",
-      place: "Pune, India",
-      logo: "affiliations/bharati-vidyapeeth.jpg" as ImageKey | null,
-      note: "Diploma certifications in vocal, instrumental and Indian dance forms.",
-    },
-    {
-      name: "Suro Bharati Sangeet Kala Kendra",
-      place: "West Bengal, India",
-      // Logo removed at Amit's request (13 Sep 2026); the affiliation stays.
-      logo: null as ImageKey | null,
-      note: "Vocal diploma certifications.",
-    },
-  ],
+  /**
+   * The school's affiliation. Swarangan previously also listed Suro Bharati
+   * Sangeet Kala Kendra; that reference was removed at Amit's request
+   * (13 Sep 2026), leaving Bharati Vidyapeeth as the single affiliation.
+   */
+  affiliation: {
+    name: "Bharati Vidyapeeth School of Performing Arts",
+    place: "Pune, India",
+    logo: "affiliations/bharati-vidyapeeth.jpg" as ImageKey,
+    /** As listed on the legacy site: "Diploma certifications". */
+    certifications: ["Vocal", "Instrumental", "Indian dance forms"],
+  },
 } as const;
 
 /** Primary navigation. Gallery is photographs only; video lives under Social. */
@@ -125,8 +122,8 @@ export function whatsappHref(
 
 /** One-line address, used in the footer and structured data. */
 export function formattedAddress(): string {
-  const { street, unit, locality, postalCode } = siteConfig.address;
-  return `${street}, ${unit}, ${locality} ${postalCode}`;
+  const { street, unit, building, locality, postalCode } = siteConfig.address;
+  return `${street}, ${unit} ${building}, ${locality} ${postalCode}`;
 }
 
 /**

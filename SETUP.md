@@ -161,10 +161,9 @@ it most happens off the website:
    npm run indexnow
    ```
 
-> Please confirm the studio's postcode. The old site says **128036**;
-> OpenStreetMap lists 52 West Coast Crescent as **126779**. Search engines
-> cross-check the address everywhere it appears, so it must match the Google
-> Business Profile exactly.
+> Use the address exactly as the website shows it — **52 West Coast Crescent,
+> #07-09 West Bay Condominium, Singapore 128036** — including on the Google
+> Business Profile. Search engines cross-check it everywhere it appears.
 
 ---
 

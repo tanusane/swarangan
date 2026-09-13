@@ -38,7 +38,7 @@ function graph() {
         logo: `${siteConfig.url}/images/brand/logo.png`,
         address: {
           "@type": "PostalAddress",
-          streetAddress: `${siteConfig.address.street}, ${siteConfig.address.unit}`,
+          streetAddress: `${siteConfig.address.street}, ${siteConfig.address.unit} ${siteConfig.address.building}`,
           addressLocality: siteConfig.address.locality,
           postalCode: siteConfig.address.postalCode,
           addressCountry: siteConfig.address.country,
@@ -111,10 +111,11 @@ function graph() {
           "Founder of Swarangan, Singapore. Master of Arts in Hindustani Vocal Music from Bharati Vidyapeeth, Pune, with more than 20 years of teaching experience.",
         image: `${siteConfig.url}/images/people/tanuja-sane-tanpura.jpg`,
         worksFor: { "@id": SCHOOL_ID },
-        alumniOf: siteConfig.affiliations.map((item) => ({
-          "@type": "Organization",
-          name: item.name,
-        })),
+        alumniOf: {
+          "@type": "CollegeOrUniversity",
+          name: "Bharati Vidyapeeth",
+          address: "Pune, India",
+        },
       },
       {
         "@type": "WebSite",
