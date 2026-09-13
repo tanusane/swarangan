@@ -1,12 +1,11 @@
 "use client";
 
 import { animate, createTimeline, stagger, utils } from "animejs";
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { ButtonLink } from "@/components/ui/button";
 import { SWARAS } from "@/components/ui/icons";
-import { getImage } from "@/components/ui/swar-image";
 import { siteConfig } from "@/lib/site-config";
 import { usePrefersReducedMotion } from "@/lib/use-external-state";
 
@@ -82,9 +81,6 @@ export function Hero() {
     return () => animations.forEach((animation) => animation.revert());
   }, [reducedMotion]);
 
-  // The reversed logo: ivory wordmark, magenta tree, for the dark ground.
-  const logo = getImage("brand/logo-reverse.png");
-
   return (
     <section
       ref={rootRef}
@@ -130,11 +126,9 @@ export function Hero() {
           <span className="sr-only">
             Swarangan — Hindustani classical vocal music classes in Singapore
           </span>
-          <Image
-            src={logo.src}
+          <BrandLogo
+            variant="reverse"
             alt=""
-            width={logo.width}
-            height={logo.height}
             priority
             data-hero="logo"
             className="h-auto w-[min(88vw,34rem)] opacity-0 motion-reduce:opacity-100 lg:w-[40rem]"

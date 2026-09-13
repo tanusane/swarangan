@@ -1,15 +1,14 @@
 "use client";
 
 import { Menu, Phone, X } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { ButtonLink } from "@/components/ui/button";
 import { useScrolledPast } from "@/lib/use-external-state";
 import { WhatsAppIcon } from "@/components/ui/icons";
-import { getImage } from "@/components/ui/swar-image";
 import {
   navigation,
   siteConfig,
@@ -47,11 +46,6 @@ export function Header() {
 
   const onHome = pathname === "/";
   const transparent = onHome && !scrolled && !open;
-  // A real two-colour reversal, not a CSS invert, which would flatten the brand
-  // to a white silhouette over the hero photograph.
-  const logo = getImage(
-    transparent ? "brand/logo-reverse.png" : "brand/logo.png",
-  );
 
   return (
     <header
@@ -68,11 +62,10 @@ export function Header() {
           aria-label={`${siteConfig.name} — home`}
           className="shrink-0"
         >
-          <Image
-            src={logo.src}
-            alt={logo.alt}
-            width={logo.width}
-            height={logo.height}
+          {/* A real two-colour reversal over the dark hero, not a CSS invert,
+              which would flatten the brand to a white silhouette. */}
+          <BrandLogo
+            variant={transparent ? "reverse" : "full"}
             priority
             className="h-10 w-auto transition-all duration-300 md:h-12"
           />

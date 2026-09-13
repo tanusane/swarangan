@@ -1,9 +1,8 @@
 import { Mail, MapPin, Phone } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/ui/brand-logo";
 import { FacebookIcon, WhatsAppIcon, YouTubeIcon } from "@/components/ui/icons";
-import { getImage } from "@/components/ui/swar-image";
 import {
   formattedAddress,
   mailtoHref,
@@ -19,21 +18,13 @@ const SOCIALS = [
 ] as const;
 
 export function Footer() {
-  const logo = getImage("brand/logo-reverse.png");
-
   return (
     <footer className="text-sand-200 bg-blue-950">
       <div className="container-swar py-16">
         <div className="grid gap-12 md:grid-cols-3">
           {/* -- Identity ---------------------------------------------------- */}
           <div>
-            <Image
-              src={logo.src}
-              alt={logo.alt}
-              width={logo.width}
-              height={logo.height}
-              className="mb-5 h-12 w-auto"
-            />
+            <BrandLogo variant="reverse" className="mb-5 h-12 w-auto" />
             <p className="text-sand-300 max-w-xs text-sm">
               {siteConfig.description}
             </p>
